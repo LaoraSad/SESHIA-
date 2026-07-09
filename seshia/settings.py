@@ -40,10 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # my apps
-    'apps.base'
+    'apps.base',
+    'apps.users',
+    'apps.cycles',
+    'apps.finances',
+    'apps.insights',
+    
 
     # third apps
 ]
+AUTH_USER_MODEL = 'apps.users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,3 +138,10 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+LANGUAGE_CODE = 'es-co'
+TIME_ZONE = 'America/Bogota'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
