@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # third apps
 ]
-AUTH_USER_MODEL = 'users.Persona'
+AUTH_USER_MODEL = 'users.persona'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

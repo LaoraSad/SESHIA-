@@ -1,34 +1,57 @@
 from django.db import models
 
 
-class Categoria(models.Model):
-    id_categoria = models.AutoField(primary_key=True, db_column='id_categoria')
-    nombre = models.CharField(max_length=80)
-    tipo = models.CharField(max_length=20)
-    icono = models.CharField(max_length=50, null=True, blank=True)
+class Category(models.Model):
+    name = models.CharField(max_length=80)
+    type = models.CharField(max_length=20)  # 'income' / 'expense'
+    icon = models.CharField(max_length=50, null=True, blank=True)
     color = models.CharField(max_length=7, null=True, blank=True)
-    color_claro = models.CharField(max_length=7, null=True, blank=True)
-    es_default = models.BooleanField(default=True)
-    persona = models.ForeignKey('users.Persona', on_delete=models.CASCADE, null=True, blank=True, db_column='persona_id')
+    light_color = models.CharField(max_length=7, null=True, blank=True)
+    is_default = models.BooleanField(default=True)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        db_table = 'categoria'
-        indexes = [models.Index(fields=['persona', 'tipo'])]
-
-
-class Transaccion(models.Model):
-    id_transaccion = models.AutoField(primary_key=True, db_column='id_transaccion')
-    persona = models.ForeignKey('users.Persona', on_delete=models.CASCADE, db_column='persona_id')
-    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, db_column='categoria_id')
-    monto = models.DecimalField(max_digits=12, decimal_places=2)
-    tipo = models.CharField(max_length=20)
-    fecha = models.DateField()
-    descripcion = models.CharField(max_length=200, null=True, blank=True)
-    creado_en = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'transaccion'
+        db_table = 'category'
         indexes = [
-            models.Index(fields=['persona', '-fecha']),
-            models.Index(fields=['persona', 'fecha', 'tipo']),
+            models.Index(fields=['user', 'type']),
         ]
+
+    def __str__(self):
+        return f'{self.name} ({self.type})'
+
+
+class Transaction(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    type = models.CharField(max_length=20)  # 'income' / 'expense'
+    date = models.DateField()
+    description = models.CharField(max_length=200, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'transaction'
+        indexes = [
+            models.Index(fields=['user', '-date']),
+            models.Index(fields=['user', 'date', 'type']),
+        ]
+
+    def __str__(self):
+        return f'{self.type} ${self.amount} - {self.date}'
+
+    @property
+    def cycle_phase(self):
+        from cycles.models import Cycle, CyclePhase
+        cycle = Cycle.objects.filter(
+            user=self.user,
+            start_date__lte=self.date,
+            end_date__gte=self.date
+        ).first()
+        if not cycle:
+            return None
+        cp = CyclePhase.objects.filter(
+            cycle=cycle,
+            start_date__lte=self.date,
+            end_date__gte=self.date
+        ).first()
+        return cp.phase if cp else None
