@@ -3,7 +3,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=80)
-    type = models.CharField(max_length=20)  # 'income' / 'expense'
+    category_type = models.CharField(max_length=20)  # 'income' / 'expense'
     icon = models.CharField(max_length=50, null=True, blank=True)
     color = models.CharField(max_length=7, null=True, blank=True)
     light_color = models.CharField(max_length=7, null=True, blank=True)
@@ -13,18 +13,18 @@ class Category(models.Model):
     class Meta:
         db_table = 'category'
         indexes = [
-            models.Index(fields=['user', 'type']),
+            models.Index(fields=['user', 'category_type']),
         ]
 
     def __str__(self):
-        return f'{self.name} ({self.type})'
+        return f'{self.name} ({self.category_type})'
 
 
 class Transaction(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    type = models.CharField(max_length=20)  # 'income' / 'expense'
+    transaction_type = models.CharField(max_length=20)  # 'income' / 'expense'
     date = models.DateField()
     description = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,11 +33,11 @@ class Transaction(models.Model):
         db_table = 'transaction'
         indexes = [
             models.Index(fields=['user', '-date']),
-            models.Index(fields=['user', 'date', 'type']),
+            models.Index(fields=['user', 'date', 'transaction_type']),
         ]
 
     def __str__(self):
-        return f'{self.type} ${self.amount} - {self.date}'
+        return f'{self.transaction_type} ${self.amount} - {self.date}'
 
     @property
     def cycle_phase(self):
