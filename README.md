@@ -135,10 +135,10 @@ Cada mensaje de commit debe seguir la especificación **Conventional Commits**.
 ### Alcance (Scope)
 
 El alcance indica **qué área** afecta el cambio.
-
-Alcances frontend: `router`, `store`, `pages`, `components`, `services`, `styles`, `utils`, `layout`
-Alcances backend: `routes`, `models`, `services`, `schemas`, `middleware`, `mongo`, `config`
-Transversales: `deps`, `config`, `ci`, `docs`
+	
+	Alcances frontend: `router`, `store`, `pages`, `components`, `services`, `styles`, `utils`, `layout`
+	Alcances backend: `routes`, `models`, `services`, `schemas`, `middleware`, `mongo`, `config`
+	Transversales: `deps`, `config`, `ci`, `docs`
 
 ### Ejemplos
 
