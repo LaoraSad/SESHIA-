@@ -60,17 +60,17 @@ Si lo hacen desde el vs code les pide un commit que es opcional (tengan mucho cu
 
 Con el nombre nos guiaremos para saber que equipo desarrollo la rama, el prefijo UI será para los frontends y el prefijo API por los backends
 
-main
-└── develop
-    ├── feature/api-auth
-    ├── feature/api-users
-    ├── feature/api-products
-    ├── feature/ui-login
-    ├── feature/ui-dashboard
-    ├── feature/ui-profile
-    ├── fix/api-pagination
-    ├── fix/ui-navbar
-    └── refactor/database
+	main
+	└── develop
+	    ├── feature/api-auth
+	    ├── feature/api-users
+	    ├── feature/api-products
+	    ├── feature/ui-login
+	    ├── feature/ui-dashboard
+	    ├── feature/ui-profile
+	    ├── fix/api-pagination
+	    ├── fix/ui-navbar
+	    └── refactor/database
 
 #### Estructura
 
