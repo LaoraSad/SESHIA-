@@ -24,7 +24,7 @@ Desde el terminal van a hacer lo siguiente:
   Para crear una rama van a utilizar el siguiente comando, esto con el fin de revisar los push request, al final el SRCUM va a revisar cada commit que decidan       enviar y sera quien apruebe o niegue el push  
 
   # esto le dice a git, básicamente créame esta rama chamo y cambiate directamente a ella 
-  git checkout -b feature/inicio 
+  	git checkout -b feature/inicio 
 
 
   
