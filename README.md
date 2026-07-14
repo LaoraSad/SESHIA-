@@ -10,14 +10,15 @@ Desde el terminal van a hacer lo siguiente:
 2. Le dan click derecho a la carpeta y abren el terminal 
 3. Desde el terminal van a CLONAR el repositorio 
 
- 	 	git clone https://github.com/YesRv/SHESIA-FINANCIAL-APP.git
+ 	 	git clone https://github.com/LaoraSad/SESHIA-.git
 
 4. Esto descarga el proyecto completo a tu computador y les creará una carpeta llamada 
-	SHESIA FINANCIAL APP
 
-5. Se van a ella via terminal con el comando:
+   		SESHIA
 
-   		cd SHESIA-FINANCIAL-APP
+6. Se van a ella via terminal con el comando:
+
+   		cd SHESIA
 
 
   Para crear una rama van a utilizar el siguiente comando, esto con el fin de revisar los push request, al final el SRCUM va a revisar cada commit que decidan       enviar y sera quien apruebe o niegue el push  
@@ -34,13 +35,13 @@ van a ir trabajando lo que les corresponda, una vez que ya tengan un cambio real
 proyecto, simplemente usa el comando:
 
 	# Te mueve a la rama developer. Es como cambiar de pestaña o cambiar de hoja
-		git checkout dev
+		git checkout development
 
 8. Lo siguiente es tener los cambios más recientes del proyecto, para eso, usamos SIEMPRE el comando:
 
 	# descarga los cambios mas recientes que otros hayan subido, siempre háganlo antes de empezar a trabajar para no quedar desactualizados.
 
-		git pull origin dev
+		git pull origin development
 
 
 9. Cada vez que avancen en algo, deben guardar su progreso, por el momento trabajaremos todos los avances en la rama secondary, para guardarlo, usan estos comandos:
@@ -51,7 +52,7 @@ proyecto, simplemente usa el comando:
 Si lo hacen desde el vs code les pide un commit que es opcional (tengan mucho cuidado cuando hagan los push desde vs code porque se pueden guardar duplicados y eso es una demora para arreglarlo TTnTT)
 
 # Básicamente le decimos a git, envíame los cambios desde mi pc hasta la rama X
-	git push origin secondary
+	git push origin development
 
 
 # Guía de Contribución
