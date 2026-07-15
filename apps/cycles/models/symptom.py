@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.cycles.models.symptom_category import SymptomCategory
+
 
 class Symptom(models.Model):
     """
