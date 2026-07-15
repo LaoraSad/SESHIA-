@@ -76,7 +76,7 @@ class Cycle(models.Model):
 
         constraints = [
             models.CheckConstraint(
-                check=Q(end_date__isnull=True) | Q(end_date__gte=F("start_date")),
+                condition=Q(end_date__isnull=True) | Q(end_date__gte=F("start_date")),
                 name="cycle_end_date_after_start_date",
             ),
         ]
