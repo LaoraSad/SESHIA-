@@ -1,5 +1,6 @@
 from django.db import models
-from choices import InsightType
+from apps.insights.choices import InsightType
+
 
 
 class Insight(models.Model):
@@ -29,7 +30,7 @@ class Insight(models.Model):
     )
 
     cycle = models.ForeignKey(
-        "cycle.Cycle",
+        "cycles.Cycle",
         on_delete=models.CASCADE,
         related_name="insights",
         verbose_name="Ciclo",
@@ -37,7 +38,7 @@ class Insight(models.Model):
     )
 
     phase = models.ForeignKey(
-        "cycle.Phase",
+        "cycles.Phase",
         on_delete=models.PROTECT,
         related_name="insights",
         verbose_name="Fase",

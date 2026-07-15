@@ -1,5 +1,6 @@
-from choices import EnergyLevel, Mood
-from apps.base import models
+from django.db import models
+from apps.cycles.choices import EnergyLevel, Mood
+
 class DailyLog(models.Model):
     """
     Representa el registro diario de una usuaria durante un ciclo menstrual.
@@ -16,7 +17,7 @@ class DailyLog(models.Model):
     """
 
     cycle = models.ForeignKey(
-        "cycle.Cycle",
+        "cycles.Cycle",
         on_delete=models.CASCADE,
         related_name="daily_logs",
         verbose_name="Ciclo",
@@ -42,7 +43,7 @@ class DailyLog(models.Model):
     )
 
     symptoms = models.ManyToManyField(
-        "cycle.Symptom",
+        "cycles.Symptom",
         blank=True,
         related_name="daily_logs",
         verbose_name="Síntomas",

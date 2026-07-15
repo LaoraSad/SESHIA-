@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Q
-from choices import CategoryType
+from apps.finances.choices import CategoryType
 
 
 class Category(models.Model):

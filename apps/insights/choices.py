@@ -1,4 +1,4 @@
-from apps.base import models
+from django.db import models
 
 class InsightType(models.TextChoices):
 
