@@ -1,5 +1,3 @@
-from datetime import date
-
 """
 Servicio encargado de la lógica de negocio relacionada con los ciclos menstruales.
 
@@ -16,6 +14,13 @@ Notes:
 - No debe contener lógica de vistas, formularios o peticiones HTTP.
 - Solo puede existir un ciclo activo por usuaria.
 """
+
+from datetime import date
+
+from apps.cycles.choices import CycleStatus
+from apps.cycles.models import Cycle
+from apps.users.models import User
+
 
 def calculate_cycle_length(
     start_date: date,
@@ -52,3 +57,82 @@ def calculate_cycle_length(
 
     return delta.days
 
+
+def get_active_cycle(user: User) -> Cycle | None:
+    """
+    Obtiene el ciclo menstrual activo de una usuaria.
+
+    Args:
+        user (User):
+            Usuaria propietaria del ciclo.
+
+    Returns:
+        Cycle | None:
+            El ciclo activo si existe; de lo contrario, None.
+
+    Notes:
+        Solo puede existir un ciclo activo por usuaria.
+    """
+    return (
+        Cycle.objects.filter(
+            user=user,
+            status=CycleStatus.ACTIVE,
+        )
+        .first()
+    )
+
+
+def get_previous_cycle(cycle: Cycle) -> Cycle | None:
+    """
+    Obtiene el ciclo menstrual inmediatamente anterior al ciclo recibido.
+
+    Args:
+        cycle (Cycle):
+            Ciclo de referencia.
+
+    Returns:
+        Cycle | None:
+            El ciclo anterior si existe; de lo contrario, None.
+
+    Notes:
+        La búsqueda se realiza utilizando la fecha de inicio del ciclo y el
+        orden definido en el modelo.
+    """
+    return (
+        Cycle.objects.filter(
+            user=cycle.user,
+            start_date__lt=cycle.start_date,
+        )
+        .first()
+    )
+
+
+def get_cycle_by_date(
+    user: User,
+    target_date: date,
+) -> Cycle | None:
+    """
+    Obtiene el ciclo menstrual al que pertenece una fecha determinada.
+
+    Args:
+        user (User):
+            Usuaria propietaria del ciclo.
+
+        target_date (date):
+            Fecha que se desea consultar.
+
+    Returns:
+        Cycle | None:
+            Ciclo al que pertenece la fecha indicada o None si no existe.
+
+    Notes:
+        La búsqueda se realiza utilizando el rango comprendido entre la
+        fecha de inicio y la fecha de finalización del ciclo.
+    """
+    return (
+        Cycle.objects.filter(
+            user=user,
+            start_date__lte=target_date,
+            end_date__gte=target_date,
+        ).first()
+    )
