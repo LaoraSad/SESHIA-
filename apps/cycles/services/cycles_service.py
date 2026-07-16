@@ -140,6 +140,7 @@ def get_cycle_by_date(
 
 
 
+
 def _create_cycle(
     user: User,
     start_date: date,
@@ -183,3 +184,44 @@ def _create_cycle(
         status=CycleStatus.ACTIVE,
     )
 
+def _close_previous_cycle(
+    cycle: Cycle,
+    next_period_date: date,
+) -> None:
+    """
+    Finaliza un ciclo menstrual activo.
+
+    Args:
+        cycle (Cycle):
+            Ciclo que será finalizado.
+
+        next_period_date (date):
+            Fecha de inicio del siguiente ciclo.
+
+    Returns:
+        None
+
+    Notes:
+        Actualiza la duración real del ciclo, reemplaza la fecha estimada
+        de finalización por la fecha real y marca el ciclo como completado.
+    """
+
+    cycle.actual_length = calculate_cycle_length(
+        start_date=cycle.start_date,
+        next_start_date=next_period_date,
+    )
+
+    cycle.end_date = (
+        next_period_date -
+        timedelta(days=1)
+    )
+
+    cycle.status = CycleStatus.COMPLETED
+
+    cycle.save(
+      update_fields=[
+        "actual_length",
+        "end_date",
+        "status",
+    ]
+)
