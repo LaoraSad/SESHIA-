@@ -58,6 +58,13 @@ class Insight(models.Model):
         help_text="Título corto que resume el insight.",
     )
 
+    code = models.CharField(
+    max_length=30,
+    editable=False,
+    verbose_name="Código",
+    help_text="Identificador interno del insight.",
+    )
+
     message = models.TextField(
         verbose_name="Mensaje",
         help_text="Contenido del insight mostrado a la usuaria.",
