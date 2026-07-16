@@ -19,7 +19,7 @@ from datetime import date
 from datetime import timedelta
 
 from apps.cycles.choices import CycleStatus
-from apps.cycles.models import Cycle
+from apps.cycles.models import Cycle, CyclePhase
 from apps.users.models import User
 
 
@@ -136,6 +136,66 @@ def get_cycle_by_date(
             start_date__lte=target_date,
             end_date__gte=target_date,
         ).first()
+    )
+
+
+def register_period(
+    user: User,
+    start_date: date,
+) -> Cycle:
+    """
+    Registra el inicio de un nuevo período menstrual.
+
+    Args:
+        user (User):
+            Usuaria que registra el período.
+
+        start_date (date):
+            Fecha de inicio del nuevo período.
+
+    Returns:
+        Cycle:
+            Nuevo ciclo menstrual creado.
+
+    Notes:
+        Si existe un ciclo activo, este será finalizado antes de crear
+        el nuevo ciclo. La duración real del ciclo finalizado se utilizará
+        como duración esperada del siguiente ciclo.
+    """
+
+    active_cycle = get_active_cycle(user)
+
+    if active_cycle:
+
+        _close_previous_cycle(
+            cycle=active_cycle,
+            next_period_date=start_date,
+        )
+
+        actual_length = active_cycle.actual_length
+
+        if actual_length is None:
+            raise ValueError(
+                "El ciclo debe tener una duración real antes de crear un nuevo ciclo."
+            )
+
+        user.default_cycle_length = actual_length
+
+        user.save(
+            update_fields=[
+                "default_cycle_length",
+            ]
+        )
+
+        expected_length = actual_length
+
+    else:
+        expected_length = user.default_cycle_length
+
+    return _create_cycle(
+        user=user,
+        start_date=start_date,
+        expected_length=expected_length,
     )
 
 
