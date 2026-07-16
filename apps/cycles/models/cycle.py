@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
 
-from cycles.choices import CycleStatus
+from apps.cycles.choices import CycleStatus
 
 
 class Cycle(models.Model):
