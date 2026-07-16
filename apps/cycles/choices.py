@@ -24,3 +24,12 @@ class Mood(models.TextChoices):
     SAD = "sad", "😔 Triste"
     IRRITABLE = "irritable", "😠 Irritable"
     ANXIOUS = "anxious", "😰 Ansiosa"
+
+class CycleStatus(models.TextChoices):
+    """
+    Estados posibles de un ciclo menstrual.
+    """
+
+    ACTIVE = "ACTIVE", "Activo"
+    COMPLETED = "COMPLETED", "Completado"
+
