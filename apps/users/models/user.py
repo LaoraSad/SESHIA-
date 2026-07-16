@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from apps.users.managers.user_manager import UserManager
+
 
 class User(AbstractUser):
     """
@@ -20,6 +22,8 @@ class User(AbstractUser):
     """
 
     username = None
+    
+    objects = UserManager()
 
     email = models.EmailField(
         unique=True,

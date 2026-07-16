@@ -31,6 +31,19 @@ class Transaction(models.Model):
         related_name="transactions",
         verbose_name="Categoría",
     )
+    cycle = models.ForeignKey(
+        "cycles.Cycle",
+        on_delete=models.PROTECT,
+        related_name="transactions",
+        verbose_name="Ciclo menstrual", 
+    )
+
+    cycle_phase = models.ForeignKey(
+        "cycles.CyclePhase",
+        on_delete=models.PROTECT,
+        related_name="transactions",
+        verbose_name="Fase del ciclo",
+    )
 
     amount = models.DecimalField(
         max_digits=12,

@@ -1,7 +1,10 @@
 from datetime import date
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
+
+from apps.cycles.choices import CycleStatus
 
 
 class Cycle(models.Model):
@@ -59,6 +62,13 @@ class Cycle(models.Model):
         verbose_name="Duración real",
         help_text="Se calcula automáticamente al finalizar el ciclo.",
     )
+
+    status = models.CharField(
+    max_length=10,
+    choices=CycleStatus.choices,
+    default=CycleStatus.ACTIVE,
+)
+
 
     notes = models.TextField(
         blank=True,
