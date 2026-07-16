@@ -16,6 +16,7 @@ Notes:
 """
 
 from datetime import date
+from datetime import timedelta
 
 from apps.cycles.choices import CycleStatus
 from apps.cycles.models import Cycle
@@ -136,3 +137,49 @@ def get_cycle_by_date(
             end_date__gte=target_date,
         ).first()
     )
+
+
+
+def _create_cycle(
+    user: User,
+    start_date: date,
+    expected_length: int,
+) -> Cycle:
+    """
+    Crea un nuevo ciclo menstrual.
+
+    Args:
+        user (User):
+            Usuaria propietaria del ciclo.
+
+        start_date (date):
+            Fecha de inicio del ciclo.
+
+        expected_length (int):
+            Duración esperada del ciclo en días.
+
+    Returns:
+        Cycle:
+            Ciclo menstrual creado.
+
+    Notes:
+        La fecha de finalización se calcula utilizando la duración
+        esperada del ciclo. Cuando la usuaria registre un nuevo
+        período, esta fecha será reemplazada por la fecha real de
+        finalización.
+    """
+
+    estimated_end_date = (
+        start_date +
+        timedelta(days=expected_length - 1)
+    )
+
+    return Cycle.objects.create(
+        user=user,
+        start_date=start_date,
+        end_date=estimated_end_date,
+        expected_length=expected_length,
+        actual_length=None,
+        status=CycleStatus.ACTIVE,
+    )
+
