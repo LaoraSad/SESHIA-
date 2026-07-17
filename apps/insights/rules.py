@@ -12,11 +12,11 @@ Notes:
 - Los insights se generan utilizando la información disponible del ciclo
   menstrual y las transacciones de la usuaria.
 """
-from apps.cycles.choices import PhaseType
+
 from apps.insights.choices import InsightType
 
 
-CYCLE_RULES = [    
+CYCLE_RULES = [
     {
         "code": "CYC001",
         "type": InsightType.CYCLE,
@@ -31,8 +31,7 @@ CYCLE_RULES = [
         "condition": "has_enough_cycle_history",
         "priority": 5,
     },
-
-        {
+    {
         "code": "CYC002",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -46,8 +45,7 @@ CYCLE_RULES = [
         "condition": "stable_cycle_duration",
         "priority": 4,
     },
-
-        {
+    {
         "code": "CYC003",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -62,8 +60,7 @@ CYCLE_RULES = [
         "condition": "variable_cycle_duration",
         "priority": 2,
     },
-
-        {
+    {
         "code": "CYC004",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -76,8 +73,7 @@ CYCLE_RULES = [
         "condition": "insufficient_cycle_history",
         "priority": 6,
     },
-
-        {
+    {
         "code": "CYC005",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -91,8 +87,7 @@ CYCLE_RULES = [
         "condition": "has_extended_cycle_history",
         "priority": 5,
     },
-
-        {
+    {
         "code": "CYC006",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -106,8 +101,7 @@ CYCLE_RULES = [
         "condition": "stable_cycle_trend",
         "priority": 4,
     },
-
-        {
+    {
         "code": "CYC007",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -121,8 +115,7 @@ CYCLE_RULES = [
         "condition": "changing_cycle_trend",
         "priority": 3,
     },
-
-        {
+    {
         "code": "CYC008",
         "type": InsightType.CYCLE,
         "phase": None,
@@ -136,13 +129,4 @@ CYCLE_RULES = [
         "condition": "not_enough_cycles_for_analysis",
         "priority": 6,
     },
-    
-
-
-
-
 ]
-
-    
-
-
