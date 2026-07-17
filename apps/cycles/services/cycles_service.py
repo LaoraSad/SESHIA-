@@ -15,8 +15,7 @@ Notes:
 - Solo puede existir un ciclo activo por usuaria.
 """
 
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 
 from apps.cycles.choices import CycleStatus
 from apps.cycles.models import Cycle, CyclePhase
@@ -308,10 +307,10 @@ def _close_previous_cycle(
     cycle.status = CycleStatus.COMPLETED
 
     cycle.save(
-      update_fields=[
-        "actual_length",
-        "end_date",
-        "status",
-    ]
-)
+        update_fields=[
+            "actual_length",
+            "end_date",
+            "status",
+        ]
+    )
 
