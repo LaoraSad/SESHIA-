@@ -81,5 +81,58 @@ def create_daily_log(
 
     return daily_log
 
-from cycles.models import DailyLog, Symptom
+
+def update_daily_log(
+    daily_log: DailyLog,
+    energy_level: int | None = None,
+    mood: str | None = None,
+    notes: str = "",
+    symptoms: list[Symptom] | None = None,
+    ) -> DailyLog:
+    """
+    Actualiza la información de un registro diario.
+
+    Args:
+        daily_log (DailyLog):
+            Registro diario que será actualizado.
+
+        energy_level (int | None):
+            Nuevo nivel de energía registrado.
+
+        mood (str | None):
+            Nuevo estado de ánimo registrado.
+
+        notes (str):
+            Nuevas notas asociadas al registro.
+
+        symptoms (list[Symptom] | None):
+            Nueva lista de síntomas asociados al registro.
+
+    Returns:
+        DailyLog:
+            Registro diario actualizado.
+
+    Notes:
+        Este servicio únicamente permite modificar la información
+        registrada por la usuaria. El ciclo y la fecha del registro
+        permanecen inalterables para conservar la integridad de los
+        datos.
+    """
+
+    daily_log.energy_level = energy_level
+    daily_log.mood = mood
+    daily_log.notes = notes
+
+    daily_log.save(
+        update_fields=[
+            "energy_level",
+            "mood",
+            "notes",
+        ]
+    )
+
+    daily_log.symptoms.set(symptoms or [])
+
+    return daily_log
+
 
