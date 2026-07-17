@@ -19,6 +19,50 @@ from apps.cycles.choices import PhaseType
 from apps.insights.choices import InsightType
 
 
+@dataclass(frozen=True)
+class InsightRule:
+    """
+    Representa una regla utilizada para generar un insight.
+
+    Cada regla define la información necesaria para construir
+    una recomendación personalizada cuando una condición
+    determinada es satisfecha.
+
+    Attributes:
+        code:
+            Identificador único de la regla.
+
+        type:
+            Tipo de insight.
+
+        phase:
+            Fase del ciclo a la que pertenece la regla.
+            Puede ser None cuando aplica de forma general.
+
+        title:
+            Título corto mostrado a la usuaria.
+
+        message:
+            Mensaje o recomendación que recibirá la usuaria.
+
+        condition:
+            Nombre de la función encargada de evaluar
+            la condición desde conditions.py.
+
+        priority:
+            Prioridad utilizada para decidir qué insight
+            mostrar cuando varias reglas son válidas.
+    """
+
+    code: str
+    type: InsightType
+    phase: PhaseType | None
+    title: str
+    message: str
+    condition: str
+    priority: int
+
+
 CYCLE_RULES = [
     {
         "code": "CYC001",
