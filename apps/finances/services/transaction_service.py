@@ -193,3 +193,22 @@ def update_transaction(
 
     return transaction
 
+def delete_transaction(
+    transaction: Transaction,
+) -> None:
+    """
+    Elimina una transacción financiera.
+
+    Args:
+        transaction (Transaction):
+            Transacción que será eliminada.
+
+    Returns:
+        None
+
+    Notes:
+        La eliminación es permanente y no puede deshacerse.
+    """
+
+    transaction.delete()
+
