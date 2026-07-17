@@ -18,6 +18,7 @@ Notes:
 """
 
 from datetime import timedelta
+from decimal import Decimal
 
 from django.db.models import Avg, Count, Sum
 
@@ -459,4 +460,134 @@ def uses_notes_frequently(cycle) -> bool:
             notes="",
         ).count()
         >= 3
+    )
+
+
+def _total_expenses(cycle) -> Decimal:
+    """
+    Calcula el total de gastos registrados en un ciclo.
+
+    Args:
+        cycle:
+            Ciclo a evaluar.
+
+    Returns:
+        Decimal:
+            Total de gastos del ciclo.
+    """
+
+    total = Decimal("0.00")
+
+    for transaction in get_cycle_transactions(cycle):
+
+        if transaction.is_expense:
+            total += transaction.amount
+
+    return total
+
+
+# Finance Conditions
+def higher_total_expenses(cycle) -> bool:
+    """
+    Determina si los gastos del ciclo actual son
+    mayores que los del ciclo anterior.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si los gastos aumentaron.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    return (
+        _total_expenses(cycle)
+        >
+        _total_expenses(previous_cycle)
+    )
+
+
+def lower_total_expenses(cycle) -> bool:
+    """
+    Determina si los gastos del ciclo actual son
+    menores que los del ciclo anterior.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si los gastos disminuyeron.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    return (
+        _total_expenses(cycle)
+        <
+        _total_expenses(previous_cycle)
+    )
+
+
+def stable_expense_pattern(cycle) -> bool:
+    """
+    Determina si el gasto total del ciclo se
+    mantiene similar al del ciclo anterior.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si la diferencia es menor o igual al 10 %.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    previous_total = _total_expenses(previous_cycle)
+
+    if previous_total == 0:
+        return False
+
+    current_total = _total_expenses(cycle)
+
+    difference = abs(current_total - previous_total)
+
+    return (
+        (difference / previous_total)
+        <= Decimal("0.10")
+    )
+
+
+def insufficient_transactions(cycle) -> bool:
+    """
+    Determina si existen pocas transacciones
+    registradas en el ciclo.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existen menos de cinco
+            transacciones.
+    """
+
+    return (
+        cycle.transactions.count() < 5
     )
