@@ -284,3 +284,66 @@ def repeated_low_energy(cycle) -> bool:
             return True
 
     return False
+
+
+def repeated_high_energy(cycle) -> bool:
+    """
+    Determina si en el ciclo anterior la usuaria registró
+    niveles altos de energía durante la fase ovulatoria.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existe al menos un registro con
+            energía alta en la fase ovulatoria.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    for daily_log in get_cycle_daily_logs(previous_cycle):
+
+        if (
+            daily_log.phase
+            and daily_log.phase.name.lower() == "ovulatoria"
+            and daily_log.energy_level == EnergyLevel.HIGH
+        ):
+            return True
+
+    return False
+
+
+def repeated_mood_pattern(cycle) -> bool:
+    """
+    Determina si durante la fase lútea del ciclo anterior
+    se registró al menos un estado de ánimo.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existe un registro de estado de ánimo.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    for daily_log in get_cycle_daily_logs(previous_cycle):
+
+        if (
+            daily_log.phase
+            and daily_log.phase.name.lower() == "lútea"
+            and daily_log.mood
+        ):
+            return True
+
+    return False
