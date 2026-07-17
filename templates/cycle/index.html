@@ -1,36 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% extends "base.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-    {% block content %}
+{% block title %}
+Ciclo Menstrual
+{% endblock %}
 
-    <h1>Ciclo Menstrual</h1>
+{% block content %}
 
-    {% if active_cycle %}
-        <p>Fase actual: {{ current_phase }}</p>
-        <p>Día de la fase: {{ phase_day }}</p>
-        <p>Días restantes: {{ days_remaining }}</p>
-    {% else %}
-        <p>No tienes un ciclo activo.</p>
-    {% endif %}
+<h1>Ciclo Menstrual</h1>
 
-    <form method="post" action="{% url 'cycles:cycle-create' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
+{% if active_cycle %}
+<p>Fase actual: {{ current_phase }}</p>
+<p>Día de la fase: {{ phase_day }}</p>
+<p>Días restantes: {{ days_remaining }}</p>
+{% else %}
+<p>No tienes un ciclo activo.</p>
+{% endif %}
 
-        <button type="submit">
-            Registrar ciclo
-        </button>
-    </form>
+<form id="daily-log-form" method="post" action="{% url 'cycles:log-day' %}">
+    {% csrf_token %}
+    {{ log_form.as_p }}
 
-    {% endblock %}
-</body>
-</html>
+    <button type="submit">
+        Guardar registro
+    </button>
+</form>
 
+<form method="post" action="{% url 'cycles:cycle-create' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
 
+    <button type="submit">
+        Registrar ciclo
+    </button>
+</form>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/cycle.js' %}"></script>
+{% endblock %}

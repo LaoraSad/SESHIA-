@@ -11,6 +11,7 @@ from apps.cycles.forms.cycle_form import CycleForm
 from apps.cycles.forms.daily_log_form import LogDayForm
 from apps.cycles.models.cycle import Cycle
 from apps.cycles.models.daily_log import DailyLog
+from django.http import JsonResponse
 
 # Create your views here.
 class CycleView(LoginRequiredMixin, TemplateView):
@@ -47,6 +48,7 @@ class CycleView(LoginRequiredMixin, TemplateView):
                 days_remaining = (phase_record.end_date - date.today()).days
 
         context["form"] = CycleForm()
+        context["log_form"] = LogDayForm(instance=today_log)
         context["active_cycle"] = active_cycle
         context["current_phase"] = current_phase
         context["today_log"] = today_log
@@ -98,11 +100,40 @@ class LogDayView(LoginRequiredMixin, View):
         ).first()
 
         if not active_cycle:
-            return redirect("cycles:cycle")
+            return JsonResponse({
+                "success": False,
+                "message": "No existe un ciclo activo."
+            }, 
+            status=400)
 
         form = LogDayForm(request.POST)
 
-        if form.is_valid():
+        if not form.is_valid():
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Hay errores en el formulario.",
+                    "errors": form.errors,
+                },
+                status=400,
+            )
+
+        daily_log = DailyLog.objects.filter(
+            cycle=active_cycle,
+            log_date=date.today(),
+        ).first()
+
+        if daily_log:
+            daily_log.energy_level = form.cleaned_data["energy_level"]
+            daily_log.mood = form.cleaned_data["mood"]
+            daily_log.notes = form.cleaned_data["notes"]
+            daily_log.save()
+
+            daily_log.symptoms.set(
+                form.cleaned_data["symptoms"]
+            )
+
+        else:
             daily_log = form.save(commit=False)
             daily_log.cycle = active_cycle
             daily_log.log_date = date.today()
@@ -110,4 +141,7 @@ class LogDayView(LoginRequiredMixin, View):
 
             form.save_m2m()
 
-        return redirect("cycles:cycle")
+        return JsonResponse({
+            "success": True,
+            "message": "Registro guardado",
+        })

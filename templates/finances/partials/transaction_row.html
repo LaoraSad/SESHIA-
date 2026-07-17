@@ -1,2 +1,33 @@
 <!--Una fila individual de transacción (ícono, monto, badge de fase)-->
 <!--🍔 15/06 Comida rápida -$45.000 🔵 Folicular-->
+
+<div class="transaction-card">
+
+    <p>
+        <strong>{{ transaction.category.icon }}</strong>
+        {{ transaction.category.name }}
+    </p>
+
+    <p>
+        {{ transaction.transaction_date }}
+    </p>
+
+    <p>
+        ${{ transaction.amount }}
+    </p>
+
+    <p>
+        {{ transaction.cycle_phase.phase.name }}
+    </p>
+
+    {% if transaction.is_income %}
+    <span class="text-green-600">
+        +${{ transaction.amount }}
+    </span>
+    {% else %}
+    <span class="text-red-600">
+        -${{ transaction.amount }}
+    </span>
+    {% endif %}
+
+</div>

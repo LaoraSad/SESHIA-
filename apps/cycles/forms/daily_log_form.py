@@ -1,10 +1,7 @@
 from django import forms
 
 from apps.cycles.models.daily_log import DailyLog
-from datetime import date
 
-from apps.cycles.forms.daily_log_form import LogDayForm
-from apps.cycles.models.daily_log import DailyLog
 
 class LogDayForm(forms.ModelForm):
     class Meta:
