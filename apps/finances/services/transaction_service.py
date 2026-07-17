@@ -264,4 +264,33 @@ def get_transactions(
         user=user,
     )
 
+def get_transactions_by_category(
+    user: User,
+    category: Category,
+) -> QuerySet[Transaction]:
+    """
+    Obtiene las transacciones financieras de una usuaria
+    pertenecientes a una categoría determinada.
+
+    Args:
+        user (User):
+            Usuaria propietaria de las transacciones.
+
+        category (Category):
+            Categoría utilizada para filtrar las transacciones.
+
+    Returns:
+        QuerySet[Transaction]:
+            Conjunto de transacciones que pertenecen a la categoría
+            indicada.
+
+    Notes:
+        Las transacciones se devuelven utilizando el orden definido
+        en el modelo.
+    """
+
+    return Transaction.objects.filter(
+        user=user,
+        category=category,
+    )
 
