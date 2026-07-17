@@ -13,7 +13,7 @@ Notes:
 - Las categorías predeterminadas son administradas por el sistema.
 """
 
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 from apps.finances.choices import CategoryType
 from apps.finances.models import Category
@@ -209,4 +209,30 @@ def get_category(
     )
 
 
+def get_categories(
+    user: User,
+    ) -> QuerySet[Category]:
+    """
+    Obtiene todas las categorías financieras disponibles para una usuaria.
+
+    Args:
+        user (User):
+            Usuaria que realiza la consulta.
+
+    Returns:
+        QuerySet[Category]:
+            Conjunto de categorías disponibles para la usuaria.
+
+    Notes:
+        La consulta incluye las categorías predeterminadas del sistema
+        y las categorías personalizadas de la usuaria.
+        Solo se consideran categorías activas.
+        Los resultados se devuelven utilizando el orden definido
+        en el modelo.
+    """
+
+    return Category.objects.filter(
+        Q(user=user) | Q(is_default=True),
+        is_active=True,
+    )
 
