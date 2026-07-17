@@ -138,6 +138,38 @@ def get_cycle_by_date(
         ).first()
     )
 
+def get_cycle_phase_by_date(
+    cycle: Cycle,
+    target_date: date,
+) -> CyclePhase | None:
+    """
+    Obtiene la fase del ciclo menstrual correspondiente a una fecha determinada.
+
+    Args:
+        cycle (Cycle):
+            Ciclo menstrual donde se realizará la búsqueda.
+
+        target_date (date):
+            Fecha que se desea consultar.
+
+    Returns:
+        CyclePhase | None:
+            Fase del ciclo correspondiente a la fecha indicada o None si
+            no existe.
+
+    Notes:
+        La búsqueda se realiza utilizando el rango comprendido entre la
+        fecha de inicio y la fecha de finalización de cada fase del ciclo.
+    """
+    return (
+        CyclePhase.objects.filter(
+            cycle=cycle,
+            start_date__lte=target_date,
+            end_date__gte=target_date,
+        )
+        .first()
+    )
+
 
 def register_period(
     user: User,
@@ -197,9 +229,6 @@ def register_period(
         start_date=start_date,
         expected_length=expected_length,
     )
-
-
-
 
 def _create_cycle(
     user: User,
@@ -285,3 +314,4 @@ def _close_previous_cycle(
         "status",
     ]
 )
+
