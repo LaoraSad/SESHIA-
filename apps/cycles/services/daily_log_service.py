@@ -12,7 +12,10 @@ Notes:
 - No debe contener lógica de vistas, formularios o peticiones HTTP.
 - Solo puede existir un registro diario por ciclo y por fecha.
 """
+
 from datetime import date
+
+from django.db.models import QuerySet
 
 from apps.cycles.models import Cycle, DailyLog, Symptom
 
@@ -88,7 +91,7 @@ def update_daily_log(
     mood: str | None = None,
     notes: str = "",
     symptoms: list[Symptom] | None = None,
-    ) -> DailyLog:
+) -> DailyLog:
     """
     Actualiza la información de un registro diario.
 
@@ -161,7 +164,7 @@ def delete_daily_log(
 def get_daily_log_by_date(
     cycle: Cycle,
     log_date: date,
-    ) -> DailyLog | None:
+) -> DailyLog | None:
     """
     Obtiene el registro diario correspondiente a una fecha de un ciclo.
 
@@ -189,3 +192,28 @@ def get_daily_log_by_date(
         )
         .first()
     )
+
+
+def get_daily_logs_by_cycle(
+    cycle: Cycle,
+    ) -> QuerySet[DailyLog]:
+    """
+    Obtiene todos los registros diarios pertenecientes a un ciclo menstrual.
+
+    Args:
+        cycle (Cycle):
+            Ciclo cuyos registros diarios serán consultados.
+
+    Returns:
+        QuerySet[DailyLog]:
+            Conjunto de registros diarios pertenecientes al ciclo.
+
+    Notes:
+        Los registros se devuelven utilizando el orden definido en el
+        modelo.
+    """
+
+    return DailyLog.objects.filter(
+        cycle=cycle,
+    )
+
