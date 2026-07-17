@@ -25,6 +25,60 @@ from apps.cycles.models import Cycle, DailyLog
 from apps.finances.models import Transaction
 
 
+# Helper functions
+def get_previous_cycle(cycle):
+    """
+    Obtiene el ciclo inmediatamente anterior de la usuaria.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        Cycle | None:
+            Ciclo anterior o None si no existe.
+    """
+
+    return (
+        Cycle.objects.filter(
+            user=cycle.user,
+            start_date__lt=cycle.start_date,
+        ).first()
+    )
+
+
+def get_cycle_daily_logs(cycle):
+    """
+    Obtiene los registros diarios de un ciclo.
+
+    Args:
+        cycle:
+            Ciclo a consultar.
+
+    Returns:
+        QuerySet[DailyLog]:
+            Registros diarios del ciclo.
+    """
+
+    return cycle.daily_logs.all()
+
+
+def get_cycle_transactions(cycle):
+    """
+    Obtiene las transacciones asociadas a un ciclo.
+
+    Args:
+        cycle:
+            Ciclo a consultar.
+
+    Returns:
+        QuerySet[Transaction]:
+            Transacciones registradas en el ciclo.
+    """
+
+    return cycle.transactions.all()
+
+
 def has_enough_cycle_history(user) -> bool:
     """
     Determina si la usuaria posee suficientes ciclos para
