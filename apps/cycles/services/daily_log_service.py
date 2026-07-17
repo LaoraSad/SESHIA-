@@ -157,3 +157,35 @@ def delete_daily_log(
 
     daily_log.delete()
 
+
+def get_daily_log_by_date(
+    cycle: Cycle,
+    log_date: date,
+    ) -> DailyLog | None:
+    """
+    Obtiene el registro diario correspondiente a una fecha de un ciclo.
+
+    Args:
+        cycle (Cycle):
+            Ciclo al que pertenece el registro.
+
+        log_date (date):
+            Fecha del registro.
+
+    Returns:
+        DailyLog | None:
+            Registro diario encontrado o None si no existe.
+
+    Notes:
+        La búsqueda se realiza utilizando el ciclo y la fecha del
+        registro. Solo puede existir un registro por día dentro de
+        un mismo ciclo.
+    """
+
+    return (
+        DailyLog.objects.filter(
+            cycle=cycle,
+            log_date=log_date,
+        )
+        .first()
+    )
