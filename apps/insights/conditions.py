@@ -591,3 +591,85 @@ def insufficient_transactions(cycle) -> bool:
     return (
         cycle.transactions.count() < 5
     )
+
+
+# Mixed Conditions
+def low_energy_with_higher_expenses(cycle) -> bool:
+    """
+    Determina si la usuaria presenta un patrón de
+    baja energía junto con un aumento en los gastos.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si ambas condiciones se cumplen.
+    """
+
+    return (
+        repeated_low_energy(cycle)
+        and higher_total_expenses(cycle)
+    )
+
+
+def mood_related_expenses(cycle) -> bool:
+    """
+    Determina si existen registros de estado de
+    ánimo junto con un incremento en los gastos.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si ambas condiciones se cumplen.
+    """
+
+    return (
+        repeated_mood_pattern(cycle)
+        and higher_total_expenses(cycle)
+    )
+
+
+def high_energy_with_stable_expenses(cycle) -> bool:
+    """
+    Determina si existe un patrón de energía alta
+    acompañado de estabilidad financiera.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si ambas condiciones se cumplen.
+    """
+
+    return (
+        repeated_high_energy(cycle)
+        and stable_expense_pattern(cycle)
+    )
+
+
+def enough_data_for_mixed_analysis(cycle) -> bool:
+    """
+    Determina si existe suficiente información
+    para generar insights combinados.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existen registros diarios y
+            transacciones suficientes.
+    """
+
+    return (
+        consistent_daily_logs(cycle)
+        and not insufficient_transactions(cycle)
+    )
