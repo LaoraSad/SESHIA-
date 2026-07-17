@@ -103,5 +103,93 @@ def create_transaction(
         description=description,
     )
 
+def update_transaction(
+    transaction: Transaction,
+    category: Category,
+    amount: Decimal,
+    transaction_date: date,
+    description: str = "",
+) -> Transaction:
+    """
+    Actualiza una transacción financiera.
 
-    
+    Args:
+        transaction (Transaction):
+            Transacción que será actualizada.
+
+        category (Category):
+            Nueva categoría de la transacción.
+
+        amount (Decimal):
+            Nuevo monto de la transacción.
+
+        transaction_date (date):
+            Nueva fecha de la transacción.
+
+        description (str):
+            Nueva descripción de la transacción.
+
+    Returns:
+        Transaction:
+            Transacción actualizada.
+
+    Raises:
+        ValueError:
+            Si el monto es menor o igual a cero.
+
+        ValueError:
+            Si no existe un ciclo para la fecha indicada.
+
+        ValueError:
+            Si no existe una fase del ciclo para la fecha indicada.
+
+    Notes:
+        Si la fecha de la transacción cambia, el ciclo menstrual y la
+        fase del ciclo se recalculan automáticamente.
+    """
+
+    if amount <= Decimal("0"):
+        raise ValueError(
+            "El monto debe ser mayor que cero."
+        )
+
+    cycle = get_cycle_by_date(
+        user=transaction.user,
+        target_date=transaction_date,
+    )
+
+    if cycle is None:
+        raise ValueError(
+            "No existe un ciclo menstrual para la fecha indicada."
+        )
+
+    cycle_phase = get_cycle_phase_by_date(
+        cycle=cycle,
+        target_date=transaction_date,
+    )
+
+    if cycle_phase is None:
+        raise ValueError(
+            "No existe una fase del ciclo para la fecha indicada."
+        )
+
+    transaction.category = category
+    transaction.amount = amount
+    transaction.transaction_date = transaction_date
+    transaction.description = description
+    transaction.cycle = cycle
+    transaction.cycle_phase = cycle_phase
+
+    transaction.save(
+        update_fields=[
+            "category",
+            "amount",
+            "transaction_date",
+            "description",
+            "cycle",
+            "cycle_phase",
+        ]
+    )
+
+    return transaction
+
