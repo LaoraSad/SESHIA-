@@ -68,3 +68,65 @@ def create_category(
         is_default=False,
         is_active=True,
     )
+
+def update_category(
+    category: Category,
+    name: str,
+    category_type: CategoryType,
+    icon: str,
+    ) -> Category:
+    """
+    Actualiza una categoría financiera personalizada.
+
+    Args:
+        category (Category):
+            Categoría que será actualizada.
+
+        name (str):
+            Nuevo nombre de la categoría.
+
+        category_type (CategoryType):
+            Nuevo tipo de categoría.
+
+        icon (str):
+            Nuevo ícono de la categoría.
+
+    Returns:
+        Category:
+            Categoría actualizada.
+
+    Raises:
+        ValueError:
+            Si la categoría es una categoría predeterminada.
+
+        ValueError:
+            Si el nombre de la categoría está vacío.
+
+    Notes:
+        Las categorías predeterminadas son administradas por el
+        sistema y no pueden modificarse.
+    """
+
+    if category.is_default:
+        raise ValueError(
+            "Las categorías predeterminadas no pueden modificarse."
+        )
+
+    if not name.strip():
+        raise ValueError(
+            "El nombre de la categoría no puede estar vacío."
+        )
+
+    category.name = name.strip()
+    category.category_type = category_type
+    category.icon = icon
+
+    category.save(
+        update_fields=[
+            "name",
+            "category_type",
+            "icon",
+        ]
+    )
+
+    return category
