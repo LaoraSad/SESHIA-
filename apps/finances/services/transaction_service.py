@@ -15,6 +15,7 @@ Notes:
 """
 from datetime import date
 from decimal import Decimal
+from django.db.models import QuerySet
 
 from apps.cycles.services.cycles_service import get_cycle_by_date, get_cycle_phase_by_date
 from apps.finances.models import Category, Transaction
@@ -239,4 +240,28 @@ def get_transaction(
         user=user,
         id=transaction_id,
     ).first()
+
+def get_transactions(
+    user: User,
+) -> QuerySet[Transaction]:
+    """
+    Obtiene todas las transacciones financieras de una usuaria.
+
+    Args:
+        user (User):
+            Usuaria propietaria de las transacciones.
+
+    Returns:
+        QuerySet[Transaction]:
+            Conjunto de transacciones pertenecientes a la usuaria.
+
+    Notes:
+        Las transacciones se devuelven utilizando el orden definido
+        en el modelo.
+    """
+
+    return Transaction.objects.filter(
+        user=user,
+    )
+
 
