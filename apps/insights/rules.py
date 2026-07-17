@@ -186,114 +186,114 @@ CYCLE_RULES = [
 
 
 DAILY_LOG_RULES = [
-    {
-        "code": "DAY001",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Has registrado niveles bajos de energía",
-        "message": (
-            "En varios ciclos has registrado niveles bajos de "
-            "energía durante esta fase. Si este patrón continúa, "
-            "podría ayudarte planificar actividades exigentes en "
-            "momentos donde normalmente te sientas con más energía."
+        InsightRule(
+        code="DAY001",
+        type=DAILY_LOG,
+        phase=PhaseType.MENSTRUAL,
+        title="Has registrado poca energía en esta fase",
+        message=(
+            "En ciclos anteriores registraste niveles bajos "
+            "de energía durante esta fase. Si este patrón "
+            "continúa, podrías organizar las actividades más "
+            "exigentes para otros momentos del ciclo."
         ),
-        "condition": "repeated_low_energy",
-        "priority": 2,
-    },
-    {
-        "code": "DAY002",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Has registrado buena energía",
-        "message": (
-            "En varios ciclos has registrado niveles altos de "
-            "energía durante esta fase. Puede ser un buen momento "
-            "para planificar actividades que requieran mayor esfuerzo."
+        condition="repeated_low_energy",
+        priority=2,
+    ),
+        InsightRule(
+        code="DAY002",
+        type=DAILY_LOG,
+        phase=PhaseType.OVULATORY,
+        title="Esta suele ser una fase con buena energía",
+        message=(
+            "En ciclos anteriores registraste niveles altos "
+            "de energía durante esta fase. Puede ser un buen "
+            "momento para realizar actividades que requieran "
+            "mayor esfuerzo físico o mental."
         ),
-        "condition": "repeated_high_energy",
-        "priority": 5,
-    },
-    {
-        "code": "DAY003",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Observamos un patrón en tu estado de ánimo",
-        "message": (
-            "Durante varios ciclos has registrado un estado de "
-            "ánimo similar en esta fase. Conocer estos patrones "
-            "puede ayudarte a organizar mejor tus actividades y "
-            "anticipar cómo podrías sentirte."
+        condition="repeated_high_energy",
+        priority=4,
+    ),
+        InsightRule(
+        code="DAY003",
+        type=DAILY_LOG,
+        phase=PhaseType.LUTEAL,
+        title="Reconocimos un patrón en tu estado de ánimo",
+        message=(
+            "En varios ciclos registraste un estado de ánimo "
+            "similar durante esta fase. Conocer estos patrones "
+            "puede ayudarte a anticipar cómo podrías sentirte."
         ),
-        "condition": "repeated_mood_pattern",
-        "priority": 3,
-    },
-    {
-        "code": "DAY004",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Un síntoma aparece con frecuencia",
-        "message": (
-            "Hemos observado que uno de tus síntomas se repite "
-            "en varios ciclos durante esta fase. Llevar este "
-            "registro puede ayudarte a reconocer mejor tus "
-            "patrones personales."
+        condition="repeated_mood_pattern",
+        priority=3,
+    ),
+        InsightRule(
+        code="DAY004",
+        type=DAILY_LOG,
+        phase=None,
+        title="Un síntoma aparece con frecuencia",
+        message=(
+            "Uno de los síntomas registrados se ha repetido "
+            "en varios ciclos. Llevar este seguimiento ayuda "
+            "a reconocer mejor tus patrones personales."
         ),
-        "condition": "repeated_symptom",
-        "priority": 2,
-    },
-    {
-        "code": "DAY005",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Has registrado varios síntomas",
-        "message": (
-            "En esta fase has registrado varios síntomas de "
-            "forma repetida. Continúa registrando esta "
-            "información para conocer mejor la evolución de "
-            "tu ciclo."
+        condition="repeated_symptom",
+        priority=2,
+    ),
+        InsightRule(
+        code="DAY005",
+        type=DAILY_LOG,
+        phase=None,
+        title="Has registrado varios síntomas",
+        message=(
+            "En diferentes ciclos registraste varios síntomas "
+            "durante un mismo periodo. Continuar registrándolos "
+            "permitirá identificar patrones con mayor precisión."
         ),
-        "condition": "multiple_repeated_symptoms",
-        "priority": 2,
-    },
-    {
-        "code": "DAY006",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Tu registro diario está dando resultados",
-        "message": (
-            "Gracias a la constancia con la que registras tu "
-            "información diaria, la aplicación puede detectar "
-            "patrones con mayor precisión."
+        condition="multiple_repeated_symptoms",
+        priority=2,
+    ),
+        InsightRule(
+        code="DAY006",
+        type=DAILY_LOG,
+        phase=None,
+        title="Tu constancia está dando resultados",
+        message=(
+            "Gracias a la información que registras con "
+            "frecuencia, la aplicación puede ofrecer "
+            "recomendaciones cada vez más personalizadas."
         ),
-        "condition": "consistent_daily_logs",
-        "priority": 5,
-    },
-    {
-        "code": "DAY007",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Registra más información diaria",
-        "message": (
-            "Mientras más registros diarios completes, más "
-            "precisas podrán ser las recomendaciones que "
-            "recibas en el futuro."
+        condition="consistent_daily_logs",
+        priority=5,
+    ),
+        InsightRule(
+        code="DAY007",
+        type=DAILY_LOG,
+        phase=None,
+        title="Registra un poco más de tu día a día",
+        message=(
+            "Mientras más registros diarios completes, "
+            "mejor podremos identificar patrones y generar "
+            "recomendaciones adaptadas a tu ciclo."
         ),
-        "condition": "insufficient_daily_logs",
-        "priority": 6,
-    },
-    {
-        "code": "DAY008",
-        "type": InsightType.DAILY_LOG,
-        "phase": None,
-        "title": "Tus anotaciones complementan el seguimiento",
-        "message": (
-            "Las notas que registras ayudan a complementar la "
-            "información de tu ciclo y facilitan recordar "
-            "situaciones importantes en el futuro."
+        condition="insufficient_daily_logs",
+        priority=6,
+    ),
+        InsightRule(
+        code="DAY008",
+        type=DAILY_LOG,
+        phase=None,
+        title="Tus anotaciones enriquecen tu historial",
+        message=(
+            "Las notas que registras complementan la "
+            "información de tu ciclo y ayudan a comprender "
+            "mejor situaciones que no pueden describirse "
+            "solo con síntomas o estados de ánimo."
         ),
-        "condition": "uses_notes_frequently",
-        "priority": 5,
-    },
+        condition="uses_notes_frequently",
+        priority=5,
+    ),
 ]
+
 
 
