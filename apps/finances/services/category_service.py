@@ -130,3 +130,44 @@ def update_category(
     )
 
     return category
+
+
+def delete_category(
+    category: Category,
+    ) -> None:
+    """
+    Desactiva una categoría financiera personalizada.
+
+    Args:
+        category (Category):
+            Categoría que será desactivada.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError:
+            Si la categoría es una categoría predeterminada.
+
+    Notes:
+        Las categorías predeterminadas son administradas por el
+        sistema y no pueden desactivarse.
+
+        La categoría no se elimina físicamente de la base de datos.
+        Únicamente se marca como inactiva para conservar el historial
+        de las transacciones asociadas.
+    """
+
+    if category.is_default:
+        raise ValueError(
+            "Las categorías predeterminadas no pueden desactivarse."
+        )
+
+    category.is_active = False
+
+    category.save(
+        update_fields=[
+            "is_active",
+        ]
+    )
+
