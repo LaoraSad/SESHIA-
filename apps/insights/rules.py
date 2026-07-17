@@ -378,3 +378,95 @@ FINANCE_RULES = [
     ),
 ]
 
+MIXED_RULES = [
+    InsightRule(
+        code="MIX001",
+        type=MIXED,
+        phase=PhaseType.MENSTRUAL,
+        title="Tus gastos aumentan cuando tienes menos energía",
+        message=(
+            "En ciclos anteriores registraste niveles bajos de "
+            "energía y un aumento en determinados gastos durante "
+            "esta fase. Anticipar este patrón puede ayudarte a "
+            "planificar mejor tu presupuesto."
+        ),
+        condition="low_energy_with_higher_expenses",
+        priority=2,
+    ),
+    InsightRule(
+        code="MIX002",
+        type=MIXED,
+        phase=PhaseType.LUTEAL,
+        title="Tu estado de ánimo coincide con cambios en tus gastos",
+        message=(
+            "En varios ciclos observamos que los cambios en tu "
+            "estado de ánimo durante esta fase coincidieron con "
+            "variaciones en tus gastos. Conocer este patrón puede "
+            "ayudarte a tomar decisiones más conscientes."
+        ),
+        condition="mood_related_expenses",
+        priority=2,
+    ),
+    InsightRule(
+        code="MIX003",
+        type=MIXED,
+        phase=PhaseType.MENSTRUAL,
+        title="Los síntomas también influyen en tus gastos",
+        message=(
+            "Cuando registras determinados síntomas durante esta "
+            "fase, también suele aumentar el gasto en categorías "
+            "relacionadas con tu bienestar. Tenerlo presente puede "
+            "facilitar una mejor planificación."
+        ),
+        condition="symptoms_related_expenses",
+        priority=2,
+    ),
+    InsightRule(
+        code="MIX004",
+        type=MIXED,
+        phase=PhaseType.OVULATORY,
+        title="Aprovechas tu fase de mayor energía",
+        message=(
+            "En ciclos anteriores registraste niveles altos de "
+            "energía y mantuviste un comportamiento financiero "
+            "estable durante esta fase. Continúa aprovechando este "
+            "momento para organizar actividades importantes."
+        ),
+        condition="high_energy_with_stable_expenses",
+        priority=4,
+    ),
+    InsightRule(
+        code="MIX005",
+        type=MIXED,
+        phase=PhaseType.LUTEAL,
+        title="Reconocer tus patrones te ayuda a planificar",
+        message=(
+            "La combinación de tus registros diarios y financieros "
+            "ha permitido identificar un patrón repetitivo durante "
+            "esta fase. Utilizar esta información puede ayudarte a "
+            "anticiparte y organizar mejor tus actividades."
+        ),
+        condition="repeated_phase_pattern",
+        priority=3,
+    ),
+    InsightRule(
+        code="MIX006",
+        type=MIXED,
+        phase=None,
+        title="Tu información está generando recomendaciones más útiles",
+        message=(
+            "La combinación de los registros de tu ciclo, tus "
+            "anotaciones diarias y tus transacciones permite ofrecer "
+            "recomendaciones cada vez más personalizadas."
+        ),
+        condition="enough_data_for_mixed_analysis",
+        priority=5,
+    ),
+]
+
+ALL_RULES: list[InsightRule] = [
+    *CYCLE_RULES,
+    *DAILY_LOG_RULES,
+    *FINANCE_RULES,
+    *MIXED_RULES,
+]
