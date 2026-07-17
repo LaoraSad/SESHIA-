@@ -212,3 +212,31 @@ def delete_transaction(
 
     transaction.delete()
 
+def get_transaction(
+    user: User,
+    transaction_id: int,
+) -> Transaction | None:
+    """
+    Obtiene una transacción financiera de una usuaria.
+
+    Args:
+        user (User):
+            Usuaria propietaria de la transacción.
+
+        transaction_id (int):
+            Identificador de la transacción.
+
+    Returns:
+        Transaction | None:
+            Transacción encontrada o None si no existe.
+
+    Notes:
+        La búsqueda se realiza únicamente entre las
+        transacciones de la usuaria.
+    """
+
+    return Transaction.objects.filter(
+        user=user,
+        id=transaction_id,
+    ).first()
+
