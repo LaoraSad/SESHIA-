@@ -25,7 +25,7 @@ from apps.users.models import User
 def calculate_cycle_length(
     start_date: date,
     next_start_date: date,
-    ) -> int:
+) -> int:
     """
     Calcula la duración real de un ciclo menstrual.
 
@@ -137,6 +137,7 @@ def get_cycle_by_date(
         ).first()
     )
 
+
 def get_cycle_phase_by_date(
     cycle: Cycle,
     target_date: date,
@@ -229,6 +230,7 @@ def register_period(
         expected_length=expected_length,
     )
 
+
 def _create_cycle(
     user: User,
     start_date: date,
@@ -271,6 +273,7 @@ def _create_cycle(
         actual_length=None,
         status=CycleStatus.ACTIVE,
     )
+
 
 def _close_previous_cycle(
     cycle: Cycle,
