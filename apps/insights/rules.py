@@ -310,4 +310,71 @@ FINANCE_RULES = [
         condition="higher_total_expenses",
         priority=3,
     ),
+    InsightRule(
+        code="FIN002",
+        type=FINANCE,
+        phase=None,
+        title="Lograste reducir tus gastos",
+        message=(
+            "En comparación con tu ciclo anterior, registraste "
+            "un menor nivel de gastos. Mantener este hábito puede "
+            "contribuir a una mejor planificación financiera."
+        ),
+        condition="lower_total_expenses",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN003",
+        type=FINANCE,
+        phase=PhaseType.MENSTRUAL,
+        title="Sueles invertir más en tu bienestar",
+        message=(
+            "Durante esta fase has registrado con frecuencia "
+            "gastos relacionados con tu bienestar personal. "
+            "Planificarlos con anticipación puede ayudarte a "
+            "administrar mejor tu presupuesto."
+        ),
+        condition="repeated_wellness_expenses",
+        priority=3,
+    ),
+    InsightRule(
+        code="FIN004",
+        type=FINANCE,
+        phase=PhaseType.LUTEAL,
+        title="Tus gastos en alimentación aumentan en esta fase",
+        message=(
+            "En varios ciclos observamos un incremento en tus "
+            "gastos de alimentación durante esta fase. Conocer "
+            "este patrón puede ayudarte a planificar mejor tus compras."
+        ),
+        condition="repeated_food_expenses",
+        priority=3,
+    ),
+    InsightRule(
+        code="FIN005",
+        type=FINANCE,
+        phase=None,
+        title="Tus gastos se mantienen estables",
+        message=(
+            "En los últimos ciclos tu nivel de gastos ha sido "
+            "bastante consistente. Esto facilita una mejor "
+            "planificación financiera."
+        ),
+        condition="stable_expense_pattern",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN006",
+        type=FINANCE,
+        phase=None,
+        title="Registra más movimientos financieros",
+        message=(
+            "Mientras más transacciones registres, mejores "
+            "recomendaciones podremos ofrecerte sobre tus hábitos "
+            "financieros."
+        ),
+        condition="insufficient_transactions",
+        priority=6,
+    ),
 ]
+
