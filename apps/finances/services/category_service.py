@@ -13,6 +13,8 @@ Notes:
 - Las categorías predeterminadas son administradas por el sistema.
 """
 
+from django.db.models import Q
+
 from apps.finances.choices import CategoryType
 from apps.finances.models import Category
 from apps.users.models import User
@@ -23,7 +25,7 @@ def create_category(
     name: str,
     category_type: CategoryType,
     icon: str,
-    ) -> Category:
+) -> Category:
     """
     Crea una nueva categoría financiera personalizada.
 
@@ -69,12 +71,13 @@ def create_category(
         is_active=True,
     )
 
+
 def update_category(
     category: Category,
     name: str,
     category_type: CategoryType,
     icon: str,
-    ) -> Category:
+) -> Category:
     """
     Actualiza una categoría financiera personalizada.
 
@@ -134,7 +137,7 @@ def update_category(
 
 def delete_category(
     category: Category,
-    ) -> None:
+) -> None:
     """
     Desactiva una categoría financiera personalizada.
 
@@ -170,4 +173,40 @@ def delete_category(
             "is_active",
         ]
     )
+
+
+def get_category(
+    user: User,
+    category_id: int,
+    ) -> Category | None:
+    """
+    Obtiene una categoría financiera disponible para una usuaria.
+
+    Args:
+        user (User):
+            Usuaria que realiza la consulta.
+
+        category_id (int):
+            Identificador de la categoría.
+
+    Returns:
+        Category | None:
+            Categoría encontrada o None si no existe.
+
+    Notes:
+        La búsqueda incluye tanto las categorías personalizadas de la
+        usuaria como las categorías predeterminadas del sistema.
+        Solo se consideran categorías activas.
+    """
+
+    return (
+        Category.objects.filter(
+            Q(user=user) | Q(is_default=True),
+            id=category_id,
+            is_active=True,
+        )
+        .first()
+    )
+
+
 
