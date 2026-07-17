@@ -8,6 +8,7 @@ Responsibilities:
     - Almacenar el historial de insights.
 """
 
+from apps.insights.choices import InsightType
 from apps.insights.models import Insight
 from apps.insights.services.conditions import CONDITIONS
 from apps.insights.services.rules import ALL_RULES
@@ -61,7 +62,12 @@ def _get_applicable_rules(cycle):
         if condition_func is None:
             continue
 
-        if condition_func(cycle):
+        if rule.type == InsightType.CYCLE:
+            result = condition_func(cycle.user)
+        else:
+            result = condition_func(cycle)
+
+        if result:
             applicable_rules.append(rule)
 
     return applicable_rules
