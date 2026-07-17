@@ -347,3 +347,116 @@ def repeated_mood_pattern(cycle) -> bool:
             return True
 
     return False
+
+
+def repeated_symptom(cycle) -> bool:
+    """
+    Determina si el ciclo anterior contiene
+    registros con síntomas.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existe al menos un síntoma registrado.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    return previous_cycle.daily_logs.filter(
+        symptoms__isnull=False,
+    ).exists()
+
+
+def multiple_repeated_symptoms(cycle) -> bool:
+    """
+    Determina si el ciclo anterior contiene
+    varios registros con síntomas.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existen dos o más registros
+            con síntomas.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    return (
+        previous_cycle.daily_logs.filter(
+            symptoms__isnull=False,
+        )
+        .distinct()
+        .count()
+        >= 2
+    )
+
+
+def consistent_daily_logs(cycle) -> bool:
+    """
+    Determina si la usuaria registró información
+    de forma constante durante el ciclo.
+
+    Args:
+        cycle:
+            Ciclo a evaluar.
+
+    Returns:
+        bool:
+            True si existen registros en al menos
+            la mitad de los días esperados.
+    """
+
+    total_logs = cycle.daily_logs.count()
+
+    return total_logs >= (cycle.expected_length / 2)
+
+
+def insufficient_daily_logs(cycle) -> bool:
+    """
+    Determina si existen pocos registros diarios.
+
+    Args:
+        cycle:
+            Ciclo a evaluar.
+
+    Returns:
+        bool:
+            True si los registros son insuficientes.
+    """
+
+    return not consistent_daily_logs(cycle)
+
+
+def uses_notes_frequently(cycle) -> bool:
+    """
+    Determina si la usuaria utiliza con frecuencia
+    las notas de los registros diarios.
+
+    Args:
+        cycle:
+            Ciclo a evaluar.
+
+    Returns:
+        bool:
+            True si existen al menos tres registros
+            con notas.
+    """
+
+    return (
+        cycle.daily_logs.exclude(
+            notes="",
+        ).count()
+        >= 3
+    )
