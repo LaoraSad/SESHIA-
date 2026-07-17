@@ -13,6 +13,9 @@ Notes:
     - No realiza consultas a la base de datos.
 """
 
+from dataclasses import dataclass
+
+from apps.cycles.choices import PhaseType
 from apps.insights.choices import InsightType
 
 
