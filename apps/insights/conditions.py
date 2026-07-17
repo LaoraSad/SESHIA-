@@ -255,7 +255,7 @@ def not_enough_cycles_for_analysis(user) -> bool:
 
 
 #Daily Log Conditions
-def repeated_low_energy(cycle) -> bool:
+def previous_cycle_low_energy(cycle) -> bool:
     """
     Determina si en el ciclo anterior la usuaria registró
     niveles bajos de energía durante la fase menstrual.
@@ -287,7 +287,7 @@ def repeated_low_energy(cycle) -> bool:
     return False
 
 
-def repeated_high_energy(cycle) -> bool:
+def previous_cycle_high_energy(cycle) -> bool:
     """
     Determina si en el ciclo anterior la usuaria registró
     niveles altos de energía durante la fase ovulatoria.
@@ -319,7 +319,7 @@ def repeated_high_energy(cycle) -> bool:
     return False
 
 
-def repeated_mood_pattern(cycle) -> bool:
+def previous_cycle_mood_pattern(cycle) -> bool:
     """
     Determina si durante la fase lútea del ciclo anterior
     se registró al menos un estado de ánimo.
@@ -350,7 +350,7 @@ def repeated_mood_pattern(cycle) -> bool:
     return False
 
 
-def repeated_symptom(cycle) -> bool:
+def previous_cycle_symptoms(cycle) -> bool:
     """
     Determina si el ciclo anterior contiene
     registros con síntomas.
@@ -374,7 +374,7 @@ def repeated_symptom(cycle) -> bool:
     ).exists()
 
 
-def multiple_repeated_symptoms(cycle) -> bool:
+def multiple_previous_cycle_symptoms(cycle) -> bool:
     """
     Determina si el ciclo anterior contiene
     varios registros con síntomas.
@@ -594,7 +594,7 @@ def insufficient_transactions(cycle) -> bool:
 
 
 # Mixed Conditions
-def low_energy_with_higher_expenses(cycle) -> bool:
+def previous_cycle_low_energy_with_higher_expenses(cycle) -> bool:
     """
     Determina si la usuaria presenta un patrón de
     baja energía junto con un aumento en los gastos.
@@ -609,7 +609,7 @@ def low_energy_with_higher_expenses(cycle) -> bool:
     """
 
     return (
-        repeated_low_energy(cycle)
+        previous_cycle_low_energy(cycle)
         and higher_total_expenses(cycle)
     )
 
@@ -629,7 +629,7 @@ def mood_related_expenses(cycle) -> bool:
     """
 
     return (
-        repeated_mood_pattern(cycle)
+        previous_cycle_mood_pattern(cycle)
         and higher_total_expenses(cycle)
     )
 
@@ -649,7 +649,7 @@ def high_energy_with_stable_expenses(cycle) -> bool:
     """
 
     return (
-        repeated_high_energy(cycle)
+        previous_cycle_high_energy(cycle)
         and stable_expense_pattern(cycle)
     )
 
@@ -673,3 +673,39 @@ def enough_data_for_mixed_analysis(cycle) -> bool:
         consistent_daily_logs(cycle)
         and not insufficient_transactions(cycle)
     )
+
+
+CONDITIONS = {
+    # Cycle
+    "has_enough_cycle_history": has_enough_cycle_history,
+    "stable_cycle_duration": stable_cycle_duration,
+    "variable_cycle_duration": variable_cycle_duration,
+    "insufficient_cycle_history": insufficient_cycle_history,
+    "has_extended_cycle_history": has_extended_cycle_history,
+    "stable_cycle_trend": stable_cycle_trend,
+    "changing_cycle_trend": changing_cycle_trend,
+    "not_enough_cycles_for_analysis": not_enough_cycles_for_analysis,
+
+    # Daily Log
+    "previous_cycle_low_energy": previous_cycle_low_energy,
+    "previous_cycle_high_energy": previous_cycle_high_energy,
+    "previous_cycle_mood_pattern": previous_cycle_mood_pattern,
+    "previous_cycle_symptoms": previous_cycle_symptoms,
+    "multiple_previous_cycle_symptoms": multiple_previous_cycle_symptoms,
+    "consistent_daily_logs": consistent_daily_logs,
+    "insufficient_daily_logs": insufficient_daily_logs,
+    "uses_notes_frequently": uses_notes_frequently,
+
+    # Finance
+    "higher_total_expenses": higher_total_expenses,
+    "lower_total_expenses": lower_total_expenses,
+    "stable_expense_pattern": stable_expense_pattern,
+    "insufficient_transactions": insufficient_transactions,
+
+    # Mixed
+    "previous_cycle_low_energy_with_higher_expenses": previous_cycle_low_energy_with_higher_expenses,
+    "mood_related_expenses": mood_related_expenses,
+    "high_energy_with_stable_expenses": high_energy_with_stable_expenses,
+    "enough_data_for_mixed_analysis": enough_data_for_mixed_analysis,
+}
+
