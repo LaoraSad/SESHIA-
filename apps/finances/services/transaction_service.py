@@ -294,3 +294,48 @@ def get_transactions_by_category(
         category=category,
     )
 
+def get_transactions_by_date_range(
+    user: User,
+    start_date: date,
+    end_date: date,
+) -> QuerySet[Transaction]:
+    """
+    Obtiene las transacciones financieras de una usuaria
+    comprendidas entre dos fechas.
+
+    Args:
+        user (User):
+            Usuaria propietaria de las transacciones.
+
+        start_date (date):
+            Fecha inicial del rango.
+
+        end_date (date):
+            Fecha final del rango.
+
+    Returns:
+        QuerySet[Transaction]:
+            Conjunto de transacciones comprendidas
+            entre las fechas indicadas.
+
+    Raises:
+        ValueError:
+            Si la fecha final es anterior a la fecha inicial.
+
+    Notes:
+        Las transacciones se devuelven utilizando el orden
+        definido en el modelo.
+    """
+
+    if end_date < start_date:
+        raise ValueError(
+            "La fecha final debe ser igual o posterior a la fecha inicial."
+        )
+
+    return Transaction.objects.filter(
+        user=user,
+        transaction_date__range=(
+            start_date,
+            end_date,
+        ),
+    )
