@@ -70,7 +70,7 @@ MIXED = InsightType.MIXED
 
 
 CYCLE_RULES = [
-        InsightRule(
+    InsightRule(
         code="CYC001",
         type=CYCLE,
         phase=None,
@@ -84,7 +84,7 @@ CYCLE_RULES = [
         condition="has_enough_cycle_history",
         priority=5,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC002",
         type=CYCLE,
         phase=None,
@@ -98,7 +98,7 @@ CYCLE_RULES = [
         condition="stable_cycle_duration",
         priority=4,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC003",
         type=CYCLE,
         phase=None,
@@ -113,7 +113,7 @@ CYCLE_RULES = [
         condition="variable_cycle_duration",
         priority=2,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC004",
         type=CYCLE,
         phase=None,
@@ -126,7 +126,7 @@ CYCLE_RULES = [
         condition="insufficient_cycle_history",
         priority=6,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC005",
         type=CYCLE,
         phase=None,
@@ -140,7 +140,7 @@ CYCLE_RULES = [
         condition="has_extended_cycle_history",
         priority=5,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC006",
         type=CYCLE,
         phase=None,
@@ -154,7 +154,7 @@ CYCLE_RULES = [
         condition="stable_cycle_trend",
         priority=4,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC007",
         type=CYCLE,
         phase=None,
@@ -168,7 +168,7 @@ CYCLE_RULES = [
         condition="changing_cycle_trend",
         priority=3,
     ),
-        InsightRule(
+    InsightRule(
         code="CYC008",
         type=CYCLE,
         phase=None,
@@ -186,7 +186,7 @@ CYCLE_RULES = [
 
 
 DAILY_LOG_RULES = [
-        InsightRule(
+    InsightRule(
         code="DAY001",
         type=DAILY_LOG,
         phase=PhaseType.MENSTRUAL,
@@ -200,7 +200,7 @@ DAILY_LOG_RULES = [
         condition="repeated_low_energy",
         priority=2,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY002",
         type=DAILY_LOG,
         phase=PhaseType.OVULATORY,
@@ -214,7 +214,7 @@ DAILY_LOG_RULES = [
         condition="repeated_high_energy",
         priority=4,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY003",
         type=DAILY_LOG,
         phase=PhaseType.LUTEAL,
@@ -227,7 +227,7 @@ DAILY_LOG_RULES = [
         condition="repeated_mood_pattern",
         priority=3,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY004",
         type=DAILY_LOG,
         phase=None,
@@ -240,7 +240,7 @@ DAILY_LOG_RULES = [
         condition="repeated_symptom",
         priority=2,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY005",
         type=DAILY_LOG,
         phase=None,
@@ -253,7 +253,7 @@ DAILY_LOG_RULES = [
         condition="multiple_repeated_symptoms",
         priority=2,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY006",
         type=DAILY_LOG,
         phase=None,
@@ -266,7 +266,7 @@ DAILY_LOG_RULES = [
         condition="consistent_daily_logs",
         priority=5,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY007",
         type=DAILY_LOG,
         phase=None,
@@ -279,7 +279,7 @@ DAILY_LOG_RULES = [
         condition="insufficient_daily_logs",
         priority=6,
     ),
-        InsightRule(
+    InsightRule(
         code="DAY008",
         type=DAILY_LOG,
         phase=None,
@@ -296,4 +296,18 @@ DAILY_LOG_RULES = [
 ]
 
 
-
+FINANCE_RULES = [
+    InsightRule(
+        code="FIN001",
+        type=FINANCE,
+        phase=None,
+        title="Tus gastos aumentaron",
+        message=(
+            "En este ciclo registraste un gasto mayor que en "
+            "el ciclo anterior. Revisar este comportamiento "
+            "puede ayudarte a identificar oportunidades de ahorro."
+        ),
+        condition="higher_total_expenses",
+        priority=3,
+    ),
+]
