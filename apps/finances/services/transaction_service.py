@@ -15,13 +15,12 @@ Notes:
 """
 from datetime import date
 from decimal import Decimal
+
 from django.db.models import QuerySet
 
 from apps.cycles.services.cycles_service import get_cycle_by_date, get_cycle_phase_by_date
 from apps.finances.models import Category, Transaction
 from apps.users.models import User
-from apps.cycles.services.cycles_service import (get_cycle_by_date, get_cycle_phase_by_date)
-
 
 
 def create_transaction(
@@ -103,6 +102,7 @@ def create_transaction(
         transaction_date=transaction_date,
         description=description,
     )
+
 
 def update_transaction(
     transaction: Transaction,
@@ -194,6 +194,7 @@ def update_transaction(
 
     return transaction
 
+
 def delete_transaction(
     transaction: Transaction,
 ) -> None:
@@ -212,6 +213,7 @@ def delete_transaction(
     """
 
     transaction.delete()
+
 
 def get_transaction(
     user: User,
@@ -240,6 +242,7 @@ def get_transaction(
         user=user,
         id=transaction_id,
     ).first()
+
 
 def get_transactions(
     user: User,
@@ -293,6 +296,7 @@ def get_transactions_by_category(
         user=user,
         category=category,
     )
+
 
 def get_transactions_by_date_range(
     user: User,
