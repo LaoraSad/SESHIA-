@@ -136,3 +136,24 @@ def update_daily_log(
     return daily_log
 
 
+def delete_daily_log(
+    daily_log: DailyLog,
+) -> None:
+    """
+    Elimina un registro diario.
+
+    Args:
+        daily_log (DailyLog):
+            Registro diario que será eliminado.
+
+    Returns:
+        None
+
+    Notes:
+        El registro se elimina de forma permanente de la base de datos.
+        Este servicio debe utilizarse cuando la usuaria desee eliminar
+        un registro creado por error.
+    """
+
+    daily_log.delete()
+
