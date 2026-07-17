@@ -99,3 +99,100 @@ def stable_cycle_duration(user) -> bool:
     return (
         max(durations) - min(durations)
     ) <= 3
+
+
+def variable_cycle_duration(user) -> bool:
+    """
+    Determina si la duración de los últimos ciclos
+    presenta variaciones importantes.
+
+    Args:
+        user:
+            Usuaria a evaluar.
+
+    Returns:
+        bool:
+            True si la duración del ciclo no ha sido estable.
+    """
+
+    return not stable_cycle_duration(user)
+
+
+def has_extended_cycle_history(user) -> bool:
+    """
+    Determina si la usuaria posee un historial amplio
+    de ciclos registrados.
+
+    Args:
+        user:
+            Usuaria a evaluar.
+
+    Returns:
+        bool:
+            True si existen al menos seis ciclos registrados.
+    """
+
+    return (
+        Cycle.objects.filter(user=user).count() >= 6
+    )
+
+
+def stable_cycle_trend(user) -> bool:
+    """
+    Determina si el historial del ciclo muestra
+    una tendencia estable.
+
+    Args:
+        user:
+            Usuaria a evaluar.
+
+    Returns:
+        bool:
+            True si existe suficiente historial y
+            la duración del ciclo ha permanecido estable.
+    """
+
+    return (
+        has_extended_cycle_history(user)
+        and stable_cycle_duration(user)
+    )
+
+
+def changing_cycle_trend(user) -> bool:
+    """
+    Determina si el historial muestra cambios
+    en la tendencia del ciclo.
+
+    Args:
+        user:
+            Usuaria a evaluar.
+
+    Returns:
+        bool:
+            True cuando existe historial suficiente
+            pero la duración del ciclo no es estable.
+    """
+
+    return (
+        has_extended_cycle_history(user)
+        and not stable_cycle_duration(user)
+    )
+
+
+def not_enough_cycles_for_analysis(user) -> bool:
+    """
+    Determina si todavía no existe suficiente
+    información para realizar análisis de tendencias.
+
+    Args:
+        user:
+            Usuaria a evaluar.
+
+    Returns:
+        bool:
+            True si existen menos de seis ciclos registrados.
+    """
+
+    return (
+        not has_extended_cycle_history(user)
+    )
