@@ -21,6 +21,7 @@ from datetime import timedelta
 
 from django.db.models import Avg, Count, Sum
 
+from apps.cycles.choices import EnergyLevel
 from apps.cycles.models import Cycle, DailyLog
 from apps.finances.models import Transaction
 
@@ -78,7 +79,7 @@ def get_cycle_transactions(cycle):
 
     return cycle.transactions.all()
 
-
+#Cycle Conditions
 def has_enough_cycle_history(user) -> bool:
     """
     Determina si la usuaria posee suficientes ciclos para
@@ -250,3 +251,36 @@ def not_enough_cycles_for_analysis(user) -> bool:
     return (
         not has_extended_cycle_history(user)
     )
+
+
+#Daily Log Conditions
+def repeated_low_energy(cycle) -> bool:
+    """
+    Determina si en el ciclo anterior la usuaria registró
+    niveles bajos de energía durante la fase menstrual.
+
+    Args:
+        cycle:
+            Ciclo actual.
+
+    Returns:
+        bool:
+            True si existe al menos un registro con
+            energía baja en la fase menstrual.
+    """
+
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    for daily_log in get_cycle_daily_logs(previous_cycle):
+
+        if (
+            daily_log.phase
+            and daily_log.phase.name.lower() == "menstrual"
+            and daily_log.energy_level == EnergyLevel.LOW
+        ):
+            return True
+
+    return False
