@@ -8,9 +8,9 @@ Responsibilities:
     - Almacenar el historial de insights.
 """
 
-from apps.insights.conditions import CONDITIONS
 from apps.insights.models import Insight
-from apps.insights.rules import ALL_RULES
+from apps.insights.services.conditions import CONDITIONS
+from apps.insights.services.rules import ALL_RULES
 
 
 def generate_insight(cycle):
