@@ -4,8 +4,7 @@ from django import forms
 from django.db.models import Q
 
 from apps.finances.choices import CategoryType
-from apps.finances.models.category import Category
-from apps.finances.models.transaction import Transaction
+from apps.finances.models import Category, Transaction
 
 
 class TransactionForm(forms.ModelForm):

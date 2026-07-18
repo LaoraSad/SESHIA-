@@ -1,7 +1,8 @@
-from django import forms
 from datetime import date
 
-from apps.cycles.models.cycle import Cycle
+from django import forms
+
+from apps.cycles.models import Cycle
 
 
 class CycleForm(forms.ModelForm):

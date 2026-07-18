@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.finances.models.category import Category
+from apps.finances.models import Category
 
 
 class CategoryForm(forms.ModelForm):
