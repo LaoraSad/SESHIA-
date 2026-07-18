@@ -1,10 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 
 from apps.users.models import User
 
 
-class RegisterForm(UserCreationForm):
+class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = [
@@ -13,10 +12,14 @@ class RegisterForm(UserCreationForm):
             "last_name",
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_email = self.instance.email if self.instance.pk else None
+
     def clean_email(self):
         email = self.cleaned_data["email"].lower().strip()
 
-        if User.objects.filter(email=email).exists():
+        if email != self._original_email and User.objects.filter(email=email).exists():
             raise forms.ValidationError(
                 "Este correo electrónico ya está registrado."
             )

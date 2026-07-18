@@ -1,15 +1,3 @@
-def __init__(
-    self,
-    *args,
-    user=None,
-    category_type=CategoryType.EXPENSE,
-    **kwargs,
-):
-    super().__init__(*args, **kwargs)
-
-    if user:
-        self.fields["category"].queryset = Category.objects.filter(
-            category_type=category_type,
-        ).filter(
-            Q(user=user) | Q(user__isnull=True)
-        )
+from apps.finances.forms.category_form import CategoryForm
+from apps.finances.forms.income_form import IncomeForm
+from apps.finances.forms.transaction_form import TransactionForm
