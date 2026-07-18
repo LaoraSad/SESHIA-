@@ -199,20 +199,26 @@ def delete_transaction(
     transaction: Transaction,
 ) -> None:
     """
-    Elimina una transacción financiera.
+    Desactiva una transacción financiera (soft delete).
+
+    La transacción permanece en la base de datos con is_active=False
+    para no afectar los cálculos de insights históricos.
 
     Args:
         transaction (Transaction):
-            Transacción que será eliminada.
+            Transacción que será desactivada.
 
     Returns:
         None
-
-    Notes:
-        La eliminación es permanente y no puede deshacerse.
     """
 
-    transaction.delete()
+    transaction.is_active = False
+
+    transaction.save(
+        update_fields=[
+            "is_active",
+        ]
+    )
 
 
 def get_transaction(
@@ -241,6 +247,7 @@ def get_transaction(
     return Transaction.objects.filter(
         user=user,
         id=transaction_id,
+        is_active=True,
     ).first()
 
 
@@ -265,6 +272,7 @@ def get_transactions(
 
     return Transaction.objects.filter(
         user=user,
+        is_active=True,
     )
 
 def get_transactions_by_category(

@@ -78,7 +78,9 @@ def get_cycle_transactions(cycle):
             Transacciones registradas en el ciclo.
     """
 
-    return cycle.transactions.all()
+    return cycle.transactions.filter(
+        is_active=True,
+    )
 
 #Cycle Conditions
 def has_enough_cycle_history(user) -> bool:
@@ -589,7 +591,7 @@ def insufficient_transactions(cycle) -> bool:
     """
 
     return (
-        cycle.transactions.count() < 5
+        cycle.transactions.filter(is_active=True).count() < 5
     )
 
 
