@@ -70,6 +70,12 @@ class Transaction(models.Model):
         verbose_name="Fecha de creación",
     )
 
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Activa",
+        help_text="Indica si la transacción se encuentra activa.",
+    )
+
     class Meta:
         ordering = ["-transaction_date", "-created_at"]
 
