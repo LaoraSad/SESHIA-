@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de ciclos | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-seshia-700">Historial de ciclos</h1>
+        <p class="text-gray-500">Tus ciclos anteriores en orden cronológico.</p>
+    </div>
+    <a href="{% url 'cycles:dashboard' %}"
+       class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+        Volver al ciclo
+    </a>
+</div>
+
+{% if cycles %}
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-seshia-50 text-left text-seshia-600">
+                    <th class="px-6 py-3 font-semibold">Inicio</th>
+                    <th class="px-6 py-3 font-semibold">Fin</th>
+                    <th class="px-6 py-3 font-semibold">Duración</th>
+                    <th class="px-6 py-3 font-semibold">Estado</th>
+                    <th class="px-6 py-3 font-semibold">Notas</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-seshia-100">
+                {% for cycle in cycles %}
+                <tr class="hover:bg-seshia-50 transition">
+                    <td class="px-6 py-4">{{ cycle.start_date|date:"d/m/Y" }}</td>
+                    <td class="px-6 py-4">
+                        {% if cycle.end_date %}{{ cycle.end_date|date:"d/m/Y" }}{% else %}—{% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if cycle.actual_length %}
+                            {{ cycle.actual_length }} días
+                        {% else %}
+                            ~{{ cycle.expected_length }} días
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if cycle.is_active %}
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Activo</span>
+                        {% else %}
+                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold">Completado</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">
+                        {{ cycle.notes|default:"—"|truncatechars:40 }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-10 text-center">
+    <p class="text-lg font-semibold text-seshia-700 mb-1">Aún no tienes ciclos en tu historial</p>
+    <p class="text-gray-500 text-sm mb-4">Cuando registres tus períodos, aparecerán aquí.</p>
+    <a href="{% url 'cycles:dashboard' %}"
+       class="inline-block bg-seshia-600 hover:bg-seshia-700 text-white font-semibold px-6 py-2.5 rounded-xl transition">
+        Ir al dashboard
+    </a>
+</div>
+{% endif %}
+{% endblock %}

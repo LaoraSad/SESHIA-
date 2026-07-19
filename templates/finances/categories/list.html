@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Categorías | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-seshia-700">Categorías</h1>
+        <p class="text-gray-500">Organiza tus ingresos y gastos.</p>
+    </div>
+
+    <div class="flex gap-2">
+        <a href="{% url 'finances:create-category' %}"
+           class="px-4 py-2 rounded-xl bg-seshia-600 hover:bg-seshia-700 text-white font-medium transition text-sm">
+            + Nueva categoría
+        </a>
+        <a href="{% url 'finances:list' %}"
+           class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+            Transacciones
+        </a>
+    </div>
+</div>
+
+{% if categories %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for category in categories %}
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 flex items-center gap-4">
+
+        <div class="w-11 h-11 rounded-xl bg-seshia-100 flex items-center justify-center text-lg shrink-0">
+            {{ category.icon|default:"💜" }}
+        </div>
+
+        <div class="flex-1 min-w-0">
+            <p class="font-semibold truncate">{{ category.name }}</p>
+            {% if category.is_income %}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Ingreso</span>
+            {% else %}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">Gasto</span>
+            {% endif %}
+        </div>
+
+        {% if not category.is_system %}
+        <div class="flex flex-col items-end gap-1">
+            <a href="{% url 'finances:update-category' category.id %}"
+               class="text-sm text-seshia-500 hover:underline font-medium">
+                Editar
+            </a>
+            <form method="post" action="{% url 'finances:delete-category' category.id %}"
+                  onsubmit="return confirm('¿Eliminar esta categoría?');">
+                {% csrf_token %}
+                <button type="submit" class="text-sm text-red-400 hover:text-red-600 font-medium">
+                    Eliminar
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <span class="text-xs text-gray-400">Sistema</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-10 text-center">
+    <p class="text-lg font-semibold text-seshia-700 mb-1">Aún no tienes categorías</p>
+    <p class="text-gray-500 text-sm mb-4">Crea una categoría para clasificar tus transacciones.</p>
+    <a href="{% url 'finances:create-category' %}"
+       class="inline-block bg-seshia-600 hover:bg-seshia-700 text-white font-semibold px-6 py-2.5 rounded-xl transition">
+        Crear categoría
+    </a>
+</div>
+{% endif %}
+{% endblock %}

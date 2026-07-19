@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Transacciones | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-seshia-700">Transacciones</h1>
+        <p class="text-gray-500">Tus ingresos y gastos recientes.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+        <a href="{% url 'finances:create-income' %}"
+           class="px-4 py-2 rounded-xl bg-seshia-600 hover:bg-seshia-700 text-white font-medium transition text-sm">
+            + Ingreso
+        </a>
+        <a href="{% url 'finances:create-expense' %}"
+           class="px-4 py-2 rounded-xl bg-seshia-500 hover:bg-seshia-600 text-white font-medium transition text-sm">
+            + Gasto
+        </a>
+        <a href="{% url 'finances:category-list' %}"
+           class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+            Categorías
+        </a>
+    </div>
+</div>
+
+{% if transactions %}
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 divide-y divide-seshia-100">
+    {% for transaction in transactions %}
+    <div class="flex items-center gap-4 px-6 py-4 hover:bg-seshia-50 transition">
+
+        <!-- Icono de la categoria -->
+        <div class="w-11 h-11 rounded-xl bg-seshia-100 flex items-center justify-center text-lg shrink-0">
+            {{ transaction.category.icon|default:"💜" }}
+        </div>
+
+        <!-- Detalle -->
+        <div class="flex-1 min-w-0">
+            <p class="font-semibold text-seshia-900 truncate">{{ transaction.category.name }}</p>
+            <p class="text-sm text-gray-500 truncate">
+                {{ transaction.transaction_date|date:"d/m/Y" }}{% if transaction.description %} · {{ transaction.description }}{% endif %}
+            </p>
+        </div>
+
+        <!-- Monto -->
+        <p class="font-bold whitespace-nowrap {% if transaction.is_income %}text-green-600{% else %}text-red-500{% endif %}">
+            {% if transaction.is_income %}+{% else %}-{% endif %}${{ transaction.amount }}
+        </p>
+
+        <!-- Acciones -->
+        <div class="flex items-center gap-2">
+            <a href="{% url 'finances:update-transaction' transaction.id %}"
+               class="text-sm text-seshia-500 hover:underline font-medium">
+                Editar
+            </a>
+            <form method="post" action="{% url 'finances:delete-transaction' transaction.id %}"
+                  onsubmit="return confirm('¿Eliminar esta transacción?');">
+                {% csrf_token %}
+                <button type="submit" class="text-sm text-red-400 hover:text-red-600 font-medium">
+                    Eliminar
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-10 text-center">
+    <p class="text-lg font-semibold text-seshia-700 mb-1">Aún no tienes transacciones</p>
+    <p class="text-gray-500 text-sm mb-4">Registra tu primer ingreso o gasto para empezar.</p>
+    <div class="flex justify-center gap-2">
+        <a href="{% url 'finances:create-income' %}"
+           class="bg-seshia-600 hover:bg-seshia-700 text-white font-semibold px-5 py-2.5 rounded-xl transition text-sm">
+            Registrar ingreso
+        </a>
+        <a href="{% url 'finances:create-expense' %}"
+           class="bg-seshia-500 hover:bg-seshia-600 text-white font-semibold px-5 py-2.5 rounded-xl transition text-sm">
+            Registrar gasto
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
