@@ -15,7 +15,6 @@ Notes:
 
 from dataclasses import dataclass
 
-from apps.cycles.choices import PhaseType
 from apps.insights.choices import InsightType
 
 
