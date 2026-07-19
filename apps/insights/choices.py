@@ -18,3 +18,14 @@ class InsightType(models.TextChoices):
 
     GENERAL = "general", "General"
 
+
+
+class PhaseType(models.TextChoices):
+    """
+    Fases del ciclo menstrual utilizadas por las reglas de insights.
+    """
+
+    MENSTRUAL = "menstrual", "Menstrual"
+    FOLLICULAR = "folicular", "Folicular"
+    OVULATORY = "ovulatoria", "Ovulatoria"
+    LUTEAL = "lútea", "Lútea"

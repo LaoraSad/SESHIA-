@@ -9,38 +9,119 @@
         {% block title %}Seshia{% endblock %}
     </title>
 
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}">
+
+    <!-- Fuente redondeada -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: "#F6F2FB",
+                            100: "#EDE4F7",
+                            200: "#D9C6EE",
+                            300: "#BE9DE0",
+                            400: "#9F7AEA",
+                            500: "#7E4BB8",
+                            600: "#5E2E91",
+                            700: "#4C2478",
+                            800: "#3A1B60",
+                            900: "#2E1656"
+                        }
+                    },
+                    fontFamily: {
+                        sans: ["Quicksand", "ui-sans-serif", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- CSS propio -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
+    <style>
+        form input, form select, form textarea {
+            width: 100%;
+            border: 1px solid #D9C6EE;
+            border-radius: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: #F6F2FB;
+            font-size: 0.95rem;
+        }
+        form input:focus, form select:focus, form textarea:focus {
+            outline: 2px solid #7E4BB8;
+            border-color: transparent;
+            background: #ffffff;
+        }
+        form input[type="checkbox"] {
+            width: auto;
+            accent-color: #5E2E91;
+        }
+        form ul {
+            list-style: none;
+        }
+    </style>
+
     {% block css %}{% endblock %}
 </head>
-<body class="min-h-screen bg-gray-100 text-gray-900 flex flex-col">
+<body class="min-h-screen bg-brand-50 text-gray-800 font-sans flex flex-col">
 
     <!-- Header -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold text-indigo-600">
-                Seshia
+    <header class="bg-white shadow-sm border-b border-brand-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap justify-between items-center">
+            <a href="{% url 'base:home' %}" class="flex items-center gap-2">
+                <img src="{% static 'img/logo.svg' %}" alt="Seshia" class="h-9 w-9">
+                <span class="text-2xl font-bold text-brand-900">Seshia</span>
             </a>
 
-            <nav class="space-x-6">
-                <a href="/" class="hover:text-indigo-600 transition">Inicio</a>
+            <!-- Boton menu movil -->
+            <button type="button"
+                    class="md:hidden text-brand-700 text-2xl px-2"
+                    aria-label="Abrir menú"
+                    onclick="document.getElementById('main-nav').classList.toggle('hidden')">
+                ☰
+            </button>
+
+            <nav id="main-nav"
+                 class="hidden flex basis-full flex-col gap-3 pt-4 md:flex md:basis-auto md:flex-row md:items-center md:gap-5 md:pt-0 text-sm font-semibold">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cycles:dashboard' %}" class="text-gray-600 hover:text-brand-600 transition">Ciclo</a>
+                    <a href="{% url 'cycles:calendar' %}" class="text-gray-600 hover:text-brand-600 transition">Calendario</a>
+                    <a href="{% url 'finances:list' %}" class="text-gray-600 hover:text-brand-600 transition">Finanzas</a>
+                    <a href="{% url 'insights:detail' %}" class="text-gray-600 hover:text-brand-600 transition">Insights</a>
+                    <a href="{% url 'users:profile' %}" class="text-gray-600 hover:text-brand-600 transition">Perfil</a>
+                    <form method="post" action="{% url 'users:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="text-brand-600 hover:text-brand-800 transition">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="text-gray-600 hover:text-brand-600 transition">Iniciar sesión</a>
+                    <a href="{% url 'users:register' %}" class="bg-brand-600 text-white px-4 py-2 rounded-full hover:bg-brand-700 transition text-center">
+                        Registrarse
+                    </a>
+                {% endif %}
             </nav>
         </div>
     </header>
 
     <!-- Contenido -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10">
         {% block content %}
         {% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t">
-        <div class="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500">
+    <footer class="bg-white border-t border-brand-100">
+        <div class="max-w-6xl mx-auto px-6 py-4 text-center text-sm text-gray-400">
             © {% now "Y" %} Seshia. Todos los derechos reservados.
         </div>
     </footer>

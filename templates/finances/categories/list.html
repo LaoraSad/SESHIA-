@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Categorías | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+    <h1 class="text-3xl font-bold text-brand-700">Categorías</h1>
+
+    <div class="flex gap-3">
+        <a href="{% url 'finances:create-category' %}" class="bg-brand-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-brand-700 transition">
+            Nueva categoría
+        </a>
+        <a href="{% url 'finances:list' %}" class="border border-brand-200 text-brand-600 px-5 py-2.5 rounded-xl font-semibold hover:bg-brand-50 transition">
+            Volver a finanzas
+        </a>
+    </div>
+</div>
+
+{% if categories %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for category in categories %}
+        <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="font-semibold text-gray-800">
+                        {{ category.icon }} {{ category.name }}
+                    </p>
+                    <span class="inline-block mt-2 text-xs font-medium px-3 py-1 rounded-full
+                        {% if category.is_income %}bg-emerald-50 text-emerald-600{% else %}bg-rose-50 text-rose-500{% endif %}">
+                        {{ category.get_category_type_display }}
+                    </span>
+                </div>
+
+                {% if not category.is_default %}
+                <div class="flex items-center gap-3 text-sm">
+                    <a href="{% url 'finances:update-category' category.id %}" class="text-brand-600 hover:underline">Editar</a>
+                    <form method="post" action="{% url 'finances:delete-category' category.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="text-rose-500 hover:underline">Eliminar</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-10 text-center">
+        <p class="text-gray-500">Aún no tienes categorías registradas.</p>
+    </div>
+{% endif %}
+{% endblock %}

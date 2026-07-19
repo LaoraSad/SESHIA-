@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Finanzas | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+    <h1 class="text-3xl font-bold text-brand-700">Mis finanzas</h1>
+
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'finances:create-income' %}" class="bg-brand-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-brand-700 transition">
+            Nuevo ingreso
+        </a>
+        <a href="{% url 'finances:create-expense' %}" class="bg-brand-100 text-brand-700 px-5 py-2.5 rounded-xl font-semibold hover:bg-brand-200 transition">
+            Nuevo gasto
+        </a>
+        <a href="{% url 'finances:category-list' %}" class="border border-brand-200 text-brand-600 px-5 py-2.5 rounded-xl font-semibold hover:bg-brand-50 transition">
+            Categorías
+        </a>
+    </div>
+</div>
+
+{% if transactions %}
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 overflow-x-auto">
+        <table class="w-full min-w-[640px] text-sm">
+            <thead class="bg-brand-100 text-brand-800">
+                <tr>
+                    <th class="text-left px-6 py-3 font-semibold">Fecha</th>
+                    <th class="text-left px-6 py-3 font-semibold">Categoría</th>
+                    <th class="text-left px-6 py-3 font-semibold">Descripción</th>
+                    <th class="text-right px-6 py-3 font-semibold">Monto</th>
+                    <th class="text-right px-6 py-3 font-semibold">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-brand-50">
+                {% for transaction in transactions %}
+                <tr class="hover:bg-brand-50 transition">
+                    <td class="px-6 py-4">{{ transaction.transaction_date|date:"d M Y" }}</td>
+                    <td class="px-6 py-4">
+                        {{ transaction.category.icon }} {{ transaction.category.name }}
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">{{ transaction.description|default:"—" }}</td>
+                    <td class="px-6 py-4 text-right font-semibold {% if transaction.category.is_income %}text-emerald-600{% else %}text-rose-500{% endif %}">
+                        {% if transaction.category.is_income %}+{% else %}−{% endif %} ${{ transaction.amount }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex justify-end items-center gap-3">
+                            <a href="{% url 'finances:update-transaction' transaction.id %}" class="text-brand-600 hover:underline">Editar</a>
+                            <form method="post" action="{% url 'finances:delete-transaction' transaction.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="text-rose-500 hover:underline">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-10 text-center">
+        <p class="text-gray-500">Aún no tienes transacciones registradas.</p>
+    </div>
+{% endif %}
+{% endblock %}

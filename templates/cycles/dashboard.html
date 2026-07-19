@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Mi ciclo | Seshia{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-brand-700 mb-8">Mi ciclo</h1>
+
+{% if active_cycle %}
+    <!-- Resumen del ciclo -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 text-center">
+            <p class="text-sm text-gray-500 mb-2">Fase actual</p>
+            <p class="text-2xl font-bold text-brand-700">{{ current_phase|default:"Sin fase" }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 text-center">
+            <p class="text-sm text-gray-500 mb-2">Día de la fase</p>
+            <p class="text-2xl font-bold text-brand-700">{{ phase_day|default:"—" }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 text-center">
+            <p class="text-sm text-gray-500 mb-2">Días restantes de la fase</p>
+            <p class="text-2xl font-bold text-brand-700">{{ days_remaining|default:"—" }}</p>
+        </div>
+    </div>
+{% else %}
+    <div class="bg-brand-100 border border-brand-200 rounded-2xl p-6 mb-10 text-center">
+        <p class="text-brand-800 font-medium">Aún no tienes un ciclo activo.</p>
+        <p class="text-sm text-brand-600 mt-1">Registra el inicio de tu período para comenzar.</p>
+    </div>
+{% endif %}
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Registrar periodo -->
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-8">
+        <h2 class="text-xl font-semibold text-brand-700 mb-4">Registrar nuevo período</h2>
+
+        <form method="post" action="{% url 'cycles:register-period' %}">
+            {% csrf_token %}
+            {% include "components/form_fields.html" %}
+
+            <button type="submit" class="w-full bg-brand-600 text-white font-semibold py-2.5 rounded-xl hover:bg-brand-700 transition">
+                Registrar período
+            </button>
+        </form>
+    </div>
+
+    <!-- Registro diario -->
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-8">
+        <h2 class="text-xl font-semibold text-brand-700 mb-4">¿Cómo te sientes hoy?</h2>
+
+        <form method="post" action="{% url 'cycles:daily-log' %}">
+            {% csrf_token %}
+            {% include "components/form_fields.html" with form=log_form %}
+
+            <button type="submit" class="w-full bg-brand-600 text-white font-semibold py-2.5 rounded-xl hover:bg-brand-700 transition">
+                Guardar registro
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,15 +1,28 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Inicio | Seshia{% endblock %}
+{% block title %}Crear cuenta | Seshia{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center justify-center py-24">
-    <h1 class="text-5xl font-bold text-indigo-600 mb-4">
-        Bienvenido a Seshia
-    </h1>
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-8">
+        <img src="{% static 'img/logo.svg' %}" alt="Seshia" class="h-14 w-14 mx-auto mb-4">
+        <h1 class="text-2xl font-bold text-brand-700 mb-1 text-center">Crear cuenta</h1>
+        <p class="text-sm text-gray-500 mb-6">Comienza a conocer tu ciclo y tus finanzas.</p>
 
-    <p class="text-lg text-gray-600 text-center max-w-2xl">
-        Hola luisita, te saludo desde register
-    </p>
+        <form method="post" action="{% url 'users:register' %}">
+            {% csrf_token %}
+            {% include "components/form_fields.html" %}
+
+            <button type="submit" class="w-full bg-brand-600 text-white font-semibold py-2.5 rounded-xl hover:bg-brand-700 transition">
+                Registrarme
+            </button>
+        </form>
+
+        <p class="text-sm text-gray-500 mt-6 text-center">
+            ¿Ya tienes cuenta?
+            <a href="{% url 'users:login' %}" class="text-brand-600 font-medium hover:underline">Inicia sesión</a>
+        </p>
+    </div>
 </div>
 {% endblock %}

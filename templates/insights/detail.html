@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Insights | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+    <h1 class="text-3xl font-bold text-brand-700">Tu insight de hoy</h1>
+
+    <a href="{% url 'insights:history' %}" class="border border-brand-200 text-brand-600 px-5 py-2.5 rounded-xl font-semibold hover:bg-brand-50 transition">
+        Ver historial
+    </a>
+</div>
+
+{% if insight %}
+    <div class="max-w-2xl bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl shadow-lg p-8 text-white">
+        <span class="inline-block text-xs font-medium bg-white/20 px-3 py-1 rounded-full mb-4">
+            {{ insight.get_type_display }}
+        </span>
+
+        <h2 class="text-2xl font-bold mb-3">{{ insight.title }}</h2>
+        <p class="text-brand-100 leading-relaxed">{{ insight.message }}</p>
+
+        <p class="text-xs text-brand-200 mt-6">
+            {{ insight.shown_at|date:"d M Y" }} · Fase: {{ insight.phase }}
+        </p>
+    </div>
+{% else %}
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-10 text-center">
+        <p class="text-gray-500">Aún no hay insights disponibles.</p>
+        <p class="text-sm text-gray-400 mt-1">Registra tus ciclos y hábitos para recibir recomendaciones personalizadas.</p>
+    </div>
+{% endif %}
+{% endblock %}

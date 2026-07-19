@@ -15,7 +15,7 @@ Notes:
 
 from dataclasses import dataclass
 
-from apps.insights.choices import InsightType
+from apps.insights.choices import InsightType, PhaseType
 
 
 @dataclass(frozen=True)

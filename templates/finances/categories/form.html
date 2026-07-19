@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | Seshia{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-8">
+        <h1 class="text-2xl font-bold text-brand-700 mb-6">{{ title }}</h1>
+
+        <form method="post" action="">
+            {% csrf_token %}
+            {% include "components/form_fields.html" %}
+
+            <button type="submit" class="w-full bg-brand-600 text-white font-semibold py-2.5 rounded-xl hover:bg-brand-700 transition">
+                Guardar
+            </button>
+        </form>
+
+        <a href="{% url 'finances:category-list' %}" class="block text-center text-sm text-brand-600 mt-5 hover:underline">
+            Volver a categorías
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -48,10 +48,25 @@ class RegisterPeriodView(LoginRequiredMixin, View):
                 context,
             )
 
-        register_period(
-            user=request.user,
-            start_date=form.cleaned_data["start_date"],
-        )
+        try:
+            register_period(
+                user=request.user,
+                start_date=form.cleaned_data["start_date"],
+            )
+        except ValueError as e:
+            form.add_error(None, str(e))
+
+            context = get_dashboard_data(request.user)
+            context["form"] = form
+            context["log_form"] = DailyLogForm(
+                instance=context["today_log"],
+            )
+
+            return render(
+                request,
+                "cycles/dashboard.html",
+                context,
+            )
 
         return redirect("cycles:dashboard")
 
@@ -97,13 +112,25 @@ class DailyLogView(LoginRequiredMixin, View):
                 context,
             )
 
-        create_or_update_daily_log(
-            user=request.user,
-            energy_level=form.cleaned_data["energy_level"],
-            mood=form.cleaned_data["mood"],
-            notes=form.cleaned_data["notes"],
-            symptoms=form.cleaned_data["symptoms"],
-        )
+        try:
+            create_or_update_daily_log(
+                user=request.user,
+                energy_level=form.cleaned_data["energy_level"],
+                mood=form.cleaned_data["mood"],
+                notes=form.cleaned_data["notes"],
+                symptoms=form.cleaned_data["symptoms"],
+            )
+        except ValueError as e:
+            form.add_error(None, str(e))
+
+            context = get_dashboard_data(request.user)
+            context["form"] = form
+
+            return render(
+                request,
+                "cycles/daily_log.html",
+                context,
+            )
 
         return redirect("cycles:dashboard")
 

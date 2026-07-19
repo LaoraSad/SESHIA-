@@ -1,0 +1,25 @@
+{% if form.non_field_errors %}
+<div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-4 text-sm">
+    {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% for field in form %}
+<div class="mb-4">
+    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+        {{ field.label }}
+    </label>
+
+    {{ field }}
+
+    {% if field.help_text %}
+        <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
+    {% endif %}
+
+    {% for error in field.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ error }}</p>
+    {% endfor %}
+</div>
+{% endfor %}
