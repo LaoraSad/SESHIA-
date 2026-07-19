@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Mi ciclo | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-seshia-700">Hola, {{ user.first_name }}</h1>
+        <p class="text-gray-500">Este es el resumen de tu ciclo.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'cycles:calendar' %}"
+           class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+            Calendario
+        </a>
+        <a href="{% url 'cycles:history' %}"
+           class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+            Historial
+        </a>
+    </div>
+</div>
+
+{% if active_cycle %}
+<!-- ================= Resumen del ciclo activo ================= -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+    <!-- Tarjeta morada con el dia del ciclo -->
+    <div class="bg-seshia-600 text-white rounded-2xl p-8 flex flex-col items-center justify-center text-center">
+        <p class="text-seshia-200 text-sm mb-2">Día del ciclo</p>
+        <p class="text-5xl font-extrabold mb-1">{{ active_cycle.day_number }}</p>
+        <p class="text-seshia-200 text-sm mb-4">de {{ active_cycle.expected_length }} días</p>
+
+        <!-- Barra de progreso -->
+        <div class="w-full bg-seshia-700 rounded-full h-2 mb-2">
+            <div class="bg-white h-2 rounded-full" style="width: {{ active_cycle.progress_percentage }}%"></div>
+        </div>
+        <p class="text-xs text-seshia-200">{{ active_cycle.progress_percentage }}% del ciclo</p>
+    </div>
+
+    <!-- Fase actual -->
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8 lg:col-span-2">
+        {% if current_phase %}
+        <p class="text-sm text-gray-500 mb-1">Fase actual</p>
+        <h2 class="text-2xl font-bold text-seshia-700 mb-3">{{ current_phase.name }}</h2>
+
+        <div class="flex flex-wrap gap-3 mb-4">
+            {% if phase_day %}
+            <span class="px-3 py-1 rounded-full bg-seshia-100 text-seshia-600 text-sm font-medium">
+                Día {{ phase_day }} de la fase
+            </span>
+            {% endif %}
+            {% if days_remaining is not None %}
+            <span class="px-3 py-1 rounded-full bg-seshia-100 text-seshia-600 text-sm font-medium">
+                {{ days_remaining }} día{{ days_remaining|pluralize }} restante{{ days_remaining|pluralize }}
+            </span>
+            {% endif %}
+        </div>
+
+        {% if current_phase.description %}
+        <p class="text-gray-600 text-sm leading-relaxed">{{ current_phase.description }}</p>
+        {% endif %}
+        {% else %}
+        <p class="text-gray-500">Aún no hay información de la fase actual.</p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<!-- Sin ciclo activo -->
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8 text-center mb-8">
+    <p class="text-lg font-semibold text-seshia-700 mb-1">Aún no tienes un ciclo activo</p>
+    <p class="text-gray-500 text-sm">Registra el inicio de tu período para comenzar a hacer seguimiento.</p>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- ================= Registrar nuevo periodo ================= -->
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8">
+        <h2 class="text-xl font-bold text-seshia-700 mb-4">Registrar nuevo período</h2>
+
+        <form method="post" action="{% url 'cycles:register-period' %}" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="mb-4">
+                <label for="{{ form.start_date.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Fecha de inicio
+                </label>
+                {{ form.start_date }}
+                <p class="text-xs text-gray-400 mt-1">Formato: AAAA-MM-DD</p>
+                {{ form.start_date.errors }}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.expected_length.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Duración esperada (días)
+                </label>
+                {{ form.expected_length }}
+                {{ form.expected_length.errors }}
+            </div>
+
+            <div class="mb-6">
+                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Notas
+                </label>
+                {{ form.notes }}
+                {{ form.notes.errors }}
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-seshia-600 hover:bg-seshia-700 text-white font-semibold py-2.5 rounded-xl transition">
+                Registrar período
+            </button>
+        </form>
+    </div>
+
+    <!-- ================= Registro diario de hoy ================= -->
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8">
+        <h2 class="text-xl font-bold text-seshia-700 mb-4">¿Cómo te sientes hoy?</h2>
+
+        <form method="post" action="{% url 'cycles:daily-log' %}" novalidate>
+            {% csrf_token %}
+
+            {% if log_form.non_field_errors %}
+            <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm">
+                {{ log_form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="{{ log_form.energy_level.id_for_label }}" class="block text-sm font-medium mb-1">
+                        Nivel de energía
+                    </label>
+                    {{ log_form.energy_level }}
+                    {{ log_form.energy_level.errors }}
+                </div>
+                <div>
+                    <label for="{{ log_form.mood.id_for_label }}" class="block text-sm font-medium mb-1">
+                        Estado de ánimo
+                    </label>
+                    {{ log_form.mood }}
+                    {{ log_form.mood.errors }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ log_form.symptoms.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Síntomas
+                </label>
+                {{ log_form.symptoms }}
+                <p class="text-xs text-gray-400 mt-1">Usa Ctrl (o Cmd) para seleccionar varios.</p>
+                {{ log_form.symptoms.errors }}
+            </div>
+
+            <div class="mb-6">
+                <label for="{{ log_form.notes.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Notas
+                </label>
+                {{ log_form.notes }}
+                {{ log_form.notes.errors }}
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-seshia-500 hover:bg-seshia-600 text-white font-semibold py-2.5 rounded-xl transition">
+                Guardar registro de hoy
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

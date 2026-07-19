@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Registro diario | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-seshia-700">Registro diario</h1>
+        <p class="text-gray-500">Cuéntanos cómo te sientes hoy.</p>
+    </div>
+    <a href="{% url 'cycles:dashboard' %}"
+       class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+        Volver al ciclo
+    </a>
+</div>
+
+{% if current_phase %}
+<div class="mb-6 px-5 py-4 rounded-2xl bg-seshia-100 border border-seshia-200 text-seshia-700 text-sm">
+    Hoy estás en la fase <strong>{{ current_phase.name }}</strong>{% if phase_day %} (día {{ phase_day }}){% endif %}.
+</div>
+{% endif %}
+
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8 max-w-2xl">
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="{{ form.energy_level.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Nivel de energía
+                </label>
+                {{ form.energy_level }}
+                {{ form.energy_level.errors }}
+            </div>
+            <div>
+                <label for="{{ form.mood.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Estado de ánimo
+                </label>
+                {{ form.mood }}
+                {{ form.mood.errors }}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="{{ form.symptoms.id_for_label }}" class="block text-sm font-medium mb-1">
+                Síntomas
+            </label>
+            {{ form.symptoms }}
+            <p class="text-xs text-gray-400 mt-1">Usa Ctrl (o Cmd) para seleccionar varios.</p>
+            {{ form.symptoms.errors }}
+        </div>
+
+        <div class="mb-6">
+            <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium mb-1">
+                Notas
+            </label>
+            {{ form.notes }}
+            {{ form.notes.errors }}
+        </div>
+
+        <button type="submit"
+                class="w-full bg-seshia-600 hover:bg-seshia-700 text-white font-semibold py-2.5 rounded-xl transition">
+            Guardar registro
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-bold text-seshia-700">{{ title }}</h1>
+    <a href="{% url 'finances:list' %}"
+       class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+        Volver
+    </a>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8 max-w-lg">
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div class="mb-4">
+            <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium mb-1">
+                Categoría
+            </label>
+            {{ form.category }}
+            {{ form.category.errors }}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="{{ form.amount.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Monto
+                </label>
+                {{ form.amount }}
+                {{ form.amount.errors }}
+            </div>
+            <div>
+                <label for="{{ form.transaction_date.id_for_label }}" class="block text-sm font-medium mb-1">
+                    Fecha
+                </label>
+                {{ form.transaction_date }}
+                <p class="text-xs text-gray-400 mt-1">Formato: AAAA-MM-DD</p>
+                {{ form.transaction_date.errors }}
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium mb-1">
+                Descripción
+            </label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        <div class="flex gap-3">
+            <button type="submit"
+                    class="bg-seshia-600 hover:bg-seshia-700 text-white font-semibold px-6 py-2.5 rounded-xl transition">
+                Guardar
+            </button>
+            <a href="{% url 'finances:list' %}"
+               class="px-6 py-2.5 rounded-xl border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

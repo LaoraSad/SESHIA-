@@ -12,38 +12,152 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Colores de la marca Seshia -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        seshia: {
+                            50: "#F5F2FA",
+                            100: "#EDE7F6",
+                            200: "#DDD1EE",
+                            300: "#C4B0E0",
+                            400: "#9F7AD1",
+                            500: "#7C3AED",
+                            600: "#5B21B6",
+                            700: "#4A1D7A",
+                            900: "#2E1065"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- CSS propio -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
+    <!-- Estilos base para los formularios (los inputs los renderiza Django) -->
+    <style>
+        main form input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+        main form select,
+        main form textarea {
+            width: 100%;
+            border: 1px solid #DDD1EE;
+            border-radius: 0.75rem;
+            padding: 0.625rem 0.875rem;
+            background-color: #FFFFFF;
+            font-size: 0.95rem;
+            color: #2E1065;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        main form input:focus,
+        main form select:focus,
+        main form textarea:focus {
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        main form textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        main form ul.errorlist {
+            color: #DC2626;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            list-style: none;
+            padding: 0;
+        }
+    </style>
+
     {% block css %}{% endblock %}
 </head>
-<body class="min-h-screen bg-gray-100 text-gray-900 flex flex-col">
+<body class="min-h-screen bg-seshia-50 text-seshia-900">
 
-    <!-- Header -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold text-indigo-600">
-                Seshia
-            </a>
+    <div class="flex flex-col md:flex-row min-h-screen">
 
-            <nav class="space-x-6">
-                <a href="/" class="hover:text-indigo-600 transition">Inicio</a>
+        {% if user.is_authenticated %}
+        <!-- ================= Sidebar (usuaria logueada) ================= -->
+        <aside class="bg-white border-b md:border-b-0 md:border-r border-seshia-100 md:w-64 shrink-0">
+            <div class="px-6 py-5 flex items-center gap-2">
+                <!-- Logo Seshia (corona) -->
+                <svg viewBox="0 0 40 34" class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="20" cy="5" r="4" fill="#9F7AD1"/>
+                    <path d="M4 12 L11 20 L20 10 L29 20 L36 12 L33 32 L7 32 Z" fill="#4A1D7A"/>
+                </svg>
+                <span class="text-2xl font-extrabold text-seshia-700">Seshia</span>
+            </div>
+
+            <!-- Navegacion -->
+            <nav class="flex md:flex-col gap-1 px-3 pb-4 overflow-x-auto">
+                <a href="{% url 'base:home' %}"
+                   class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap hover:bg-seshia-100 hover:text-seshia-600 transition">
+                    <span class="w-2 h-2 rounded-full bg-seshia-300"></span> Home
+                </a>
+                <a href="{% url 'cycles:dashboard' %}"
+                   class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap hover:bg-seshia-100 hover:text-seshia-600 transition">
+                    <span class="w-2 h-2 rounded-full bg-seshia-300"></span> Ciclo
+                </a>
+                <a href="{% url 'insights:detail' %}"
+                   class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap hover:bg-seshia-100 hover:text-seshia-600 transition">
+                    <span class="w-2 h-2 rounded-full bg-seshia-300"></span> Insights
+                </a>
+                <a href="{% url 'finances:list' %}"
+                   class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap hover:bg-seshia-100 hover:text-seshia-600 transition">
+                    <span class="w-2 h-2 rounded-full bg-seshia-300"></span> Transacciones
+                </a>
+                <a href="{% url 'users:profile' %}"
+                   class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap hover:bg-seshia-100 hover:text-seshia-600 transition">
+                    <span class="w-2 h-2 rounded-full bg-seshia-300"></span> Perfil
+                </a>
+
+                <!-- Cerrar sesion -->
+                <form method="post" action="{% url 'users:logout' %}" class="md:mt-6">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap text-gray-400 hover:bg-red-50 hover:text-red-500 transition w-full text-left">
+                        <span class="w-2 h-2 rounded-full bg-gray-300"></span> Salir
+                    </button>
+                </form>
             </nav>
-        </div>
-    </header>
+        </aside>
 
-    <!-- Contenido -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
-        {% block content %}
-        {% endblock %}
-    </main>
+        {% else %}
+        <!-- ================= Header simple (login / registro) ================= -->
+        <header class="absolute top-0 left-0 px-6 py-5">
+            <a href="{% url 'base:home' %}" class="inline-flex items-center gap-2">
+                <svg viewBox="0 0 40 34" class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="20" cy="5" r="4" fill="#9F7AD1"/>
+                    <path d="M4 12 L11 20 L20 10 L29 20 L36 12 L33 32 L7 32 Z" fill="#4A1D7A"/>
+                </svg>
+                <span class="text-2xl font-extrabold text-seshia-700">Seshia</span>
+            </a>
+        </header>
+        {% endif %}
 
-    <!-- Footer -->
-    <footer class="bg-white border-t">
-        <div class="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500">
-            © {% now "Y" %} Seshia. Todos los derechos reservados.
-        </div>
-    </footer>
+        <!-- Contenido -->
+        <main class="flex-1 px-5 py-8 md:px-10 {% if not user.is_authenticated %}flex items-center justify-center pt-20{% endif %}">
+            <div class="{% if user.is_authenticated %}max-w-5xl mx-auto{% else %}w-full max-w-md{% endif %}">
+
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div class="px-4 py-3 rounded-xl text-sm bg-seshia-100 text-seshia-700 border border-seshia-200">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
 
     {% block js %}{% endblock %}
 </body>
