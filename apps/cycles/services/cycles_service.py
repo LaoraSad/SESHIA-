@@ -16,9 +16,14 @@ Notes:
 """
 
 from datetime import date, timedelta
+from typing import Any
+from django.db.models import QuerySet
 
-from apps.cycles.choices import CycleStatus
+from apps.cycles.choices import CycleStatus, EnergyLevel, Mood
 from apps.cycles.models import Cycle, CyclePhase
+from apps.cycles.models.daily_log import DailyLog
+from apps.cycles.models.symptom import Symptom
+from apps.cycles.services.daily_log_service import create_daily_log, get_daily_log_by_date, update_daily_log
 from apps.users.models import User
 
 
@@ -168,6 +173,160 @@ def get_cycle_phase_by_date(
             end_date__gte=target_date,
         )
         .first()
+    )
+
+
+def get_dashboard_data(user: User) -> dict[str, Any]:
+    """
+    Obtiene la información necesaria para mostrar el dashboard
+    principal de la usuaria.
+
+    Args:
+        user (User):
+            Usuaria propietaria del dashboard.
+
+    Returns:
+        dict[str, Any]:
+            Diccionario con la información del ciclo activo,
+            fase actual, registro diario de hoy y el progreso
+            de la fase actual.
+
+    Notes:
+        Si la usuaria no tiene un ciclo activo, los valores
+        relacionados con el ciclo serán ``None``.
+    """
+
+    today = date.today()
+
+    active_cycle = get_active_cycle(user)
+
+    today_log = None
+    current_phase = None
+    phase_day = None
+    days_remaining = None
+
+    if active_cycle:
+        current_phase = active_cycle.current_phase
+
+        today_log = get_daily_log_by_date(
+            active_cycle,
+            today,
+        )
+
+        phase_record = active_cycle.phases.filter(
+            start_date__lte=today,
+            end_date__gte=today,
+        ).first()
+
+        if phase_record:
+            phase_day = (
+                today - phase_record.start_date
+            ).days + 1
+
+            days_remaining = (
+                phase_record.end_date - today
+            ).days
+
+    return {
+        "active_cycle": active_cycle,
+        "current_phase": current_phase,
+        "today_log": today_log,
+        "phase_day": phase_day,
+        "days_remaining": days_remaining,
+    }
+
+
+def create_or_update_daily_log(
+    user: User,
+    energy_level: EnergyLevel | None = None,
+    mood: Mood | None = None,
+    notes: str = "",
+    symptoms: list[Symptom] | None = None,
+) -> DailyLog:
+    """
+    Crea o actualiza el registro diario correspondiente
+    a la fecha actual.
+
+    Args:
+        user (User):
+            Usuaria propietaria del registro.
+
+        energy_level (EnergyLevel | None):
+            Nivel de energía registrado.
+
+        mood (Mood | None):
+            Estado de ánimo registrado.
+
+        notes (str):
+            Notas adicionales del día.
+
+        symptoms (list[Symptom] | None):
+            Lista de síntomas asociados al registro.
+
+    Returns:
+        DailyLog:
+            Registro diario creado o actualizado.
+
+    Raises:
+        ValueError:
+            Si la usuaria no posee un ciclo activo.
+
+    Notes:
+        Si ya existe un registro para la fecha actual,
+        este será actualizado. En caso contrario,
+        se creará un nuevo registro.
+    """
+
+    today = date.today()
+
+    active_cycle = get_active_cycle(user)
+
+    if active_cycle is None:
+        raise ValueError(
+            "La usuaria no tiene un ciclo activo."
+        )
+
+    daily_log = get_daily_log_by_date(
+        active_cycle,
+        today,
+    )
+
+    if daily_log:
+        return update_daily_log(
+            daily_log=daily_log,
+            energy_level=energy_level,
+            mood=mood,
+            notes=notes,
+            symptoms=symptoms,
+        )
+
+    return create_daily_log(
+        cycle=active_cycle,
+        log_date=today,
+        energy_level=energy_level,
+        mood=mood,
+        notes=notes,
+        symptoms=symptoms,
+    )
+
+
+def get_cycle_history(
+    user: User,
+) -> QuerySet[Cycle]:
+    """
+    Obtiene el historial de ciclos de una usuaria.
+
+    Args:
+        user (User):
+            Usuaria propietaria de los ciclos.
+
+    Returns:
+        QuerySet[Cycle]:
+            Historial de ciclos de la usuaria.
+    """
+
+    return Cycle.objects.filter(
+        user=user,
     )
 
 
