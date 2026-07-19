@@ -64,9 +64,14 @@ def create_daily_log(
         registro debido a la relación ManyToMany.
     """
 
-    if not (
+    if cycle.end_date is not None and not (
         cycle.start_date <= log_date <= cycle.end_date
     ):
+        raise ValueError(
+            "La fecha del registro debe pertenecer al ciclo."
+        )
+
+    if cycle.end_date is None and log_date < cycle.start_date:
         raise ValueError(
             "La fecha del registro debe pertenecer al ciclo."
         )

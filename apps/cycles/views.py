@@ -9,7 +9,7 @@ from apps.cycles.services.cycles_service import (
     get_dashboard_data,
     register_period,
 )
-from apps.cycles.services.daily_log_service import (
+from apps.cycles.services.cycles_service import (
     create_or_update_daily_log,
 )
 

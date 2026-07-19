@@ -13,7 +13,7 @@ from apps.insights.choices import InsightType
 from apps.insights.models import Insight
 from apps.insights.services.conditions import CONDITIONS
 from apps.insights.services.rules import ALL_RULES
-from user import User
+from apps.users.models import User
 
 
 def generate_insight(cycle):

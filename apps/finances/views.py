@@ -259,3 +259,5 @@ class DeleteCategoryView(LoginRequiredMixin, View):
             delete_category(category)
         except ValueError:
             return redirect("finances:category-list")
+
+        return redirect("finances:category-list")

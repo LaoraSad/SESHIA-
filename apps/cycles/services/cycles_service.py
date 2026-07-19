@@ -370,18 +370,18 @@ def register_period(
                 "El ciclo debe tener una duración real antes de crear un nuevo ciclo."
             )
 
-        user.default_cycle_length = actual_length
+        user.predicted_cycle_length = actual_length
 
         user.save(
             update_fields=[
-                "default_cycle_length",
+                "predicted_cycle_length",
             ]
         )
 
         expected_length = actual_length
 
     else:
-        expected_length = user.default_cycle_length
+        expected_length = user.predicted_cycle_length
 
     return _create_cycle(
         user=user,
