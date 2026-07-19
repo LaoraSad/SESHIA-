@@ -4,7 +4,9 @@ from . import views
 app_name = 'cycles'
 
 urlpatterns = [
-    path('cycle/', views.CycleView.as_view(), name='cycle'),
-    path('api/cycles/create/', views.CycleCreateView.as_view(), name='cycle-create'),
-    path('api/cycles/log-day/', views.LogDayView.as_view(), name='log-day'),
+    path('', views.DashboardView.as_view(), name='dashboard'),
+    path('registrar/', views.RegisterPeriodView.as_view(), name='register-period'),
+    path('calendario/', views.CalendarView.as_view(), name='calendar'),
+    path('registro-diario/', views.DailyLogView.as_view(), name='daily-log'),
+    path('historial/', views.CycleHistoryView.as_view(), name='history'),
 ]
