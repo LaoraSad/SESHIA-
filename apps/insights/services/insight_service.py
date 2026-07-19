@@ -7,11 +7,13 @@ Responsibilities:
     - Seleccionar el insight más relevante.
     - Almacenar el historial de insights.
 """
+from django.db.models import QuerySet
 
 from apps.insights.choices import InsightType
 from apps.insights.models import Insight
 from apps.insights.services.conditions import CONDITIONS
 from apps.insights.services.rules import ALL_RULES
+from user import User
 
 
 def generate_insight(cycle):
@@ -127,4 +129,20 @@ def _create_insight(cycle, rule):
         code=rule.code,
         title=rule.title,
         message=rule.message,
+    )
+
+
+def get_latest_insight(
+    user: User,
+) -> Insight | None:
+    return Insight.objects.filter(
+        user=user,
+    ).first()
+
+
+def get_insight_history(
+    user: User,
+) -> QuerySet[Insight]:
+    return Insight.objects.filter(
+        user=user,
     )
