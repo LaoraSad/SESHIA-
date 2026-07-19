@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.views import View
 
-from apps.finances.forms.Expense_form import ExpenseForm
+from apps.finances.forms.expense_form import ExpenseForm
 from apps.finances.forms.category_form import CategoryForm
 from apps.finances.forms.income_form import IncomeForm
 from apps.finances.services.category_service import (
