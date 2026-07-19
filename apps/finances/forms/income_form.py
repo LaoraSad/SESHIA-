@@ -1,10 +1,10 @@
 from datetime import date
 
 from django import forms
-from django.db.models import Q
 
 from apps.finances.choices import CategoryType
-from apps.finances.models import Category, Transaction
+from apps.finances.models import Transaction
+from apps.finances.services.category_service import get_categories
 
 
 class IncomeForm(forms.ModelForm):
@@ -21,21 +21,11 @@ class IncomeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if user:
-            self.fields["category"].queryset = Category.objects.filter(
-                category_type=CategoryType.INCOME,
-            ).filter(
-                Q(user=user) | Q(user__isnull=True)
+            self.fields["category"].queryset = (
+                get_categories(user).filter(
+                    category_type=CategoryType.INCOME,
+                )
             )
-
-    def clean_amount(self):
-        amount = self.cleaned_data["amount"]
-
-        if amount <= 0:
-            raise forms.ValidationError(
-                "El monto debe ser mayor que cero."
-            )
-
-        return amount
 
     def clean_transaction_date(self):
         transaction_date = self.cleaned_data["transaction_date"]
