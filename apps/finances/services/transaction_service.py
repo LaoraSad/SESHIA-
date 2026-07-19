@@ -303,6 +303,7 @@ def get_transactions_by_category(
     return Transaction.objects.filter(
         user=user,
         category=category,
+         is_active=True,
     )
 
 
@@ -350,4 +351,5 @@ def get_transactions_by_date_range(
             start_date,
             end_date,
         ),
+         is_active=True,
     )
