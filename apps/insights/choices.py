@@ -18,3 +18,12 @@ class InsightType(models.TextChoices):
 
     GENERAL = "general", "General"
 
+
+
+
+class PhaseType(models.TextChoices):
+    MENSTRUAL = "menstrual", "Menstrual"
+    FOLLICULAR = "folicular", "Folicular"
+    OVULATORY = "ovulatoria", "Ovulatoria"
+    LUTEAL = "lútea", "Lútea"
+

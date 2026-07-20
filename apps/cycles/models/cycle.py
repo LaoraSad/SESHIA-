@@ -127,7 +127,7 @@ class Cycle(models.Model):
         Returns:
             int: Día correspondiente dentro del ciclo.
         """
-        reference_date = self.end_date or date.today()
+        reference_date = date.today() if self.status == CycleStatus.ACTIVE else self.end_date
         return (reference_date - self.start_date).days + 1
 
     @property
