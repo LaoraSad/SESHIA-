@@ -18,46 +18,18 @@ from apps.users.models import User
 
 
 def generate_insight(cycle):
-    """
-    Genera un insight para un ciclo menstrual.
+    applicable = _get_applicable_rules(cycle)
 
-    El servicio evalúa todas las reglas disponibles,
-    selecciona la de mayor prioridad y almacena el
-    insight generado.
-
-    Args:
-        cycle:
-            Ciclo a analizar.
-
-    Returns:
-        Insight | None:
-            Insight creado o None si ninguna regla aplica.
-    """
-
-    applicable_rules = _get_applicable_rules(cycle)
-
-    if not applicable_rules:
+    if not applicable:
         return None
 
-    rule = _select_best_rule(applicable_rules)
+    rule, context = _select_best_rule(applicable)
 
-    return _create_insight(cycle, rule)
+    return _create_insight(cycle, rule, context)
 
 
 def _get_applicable_rules(cycle):
-    """
-    Obtiene las reglas cuyas condiciones se cumplen.
-
-    Args:
-        cycle:
-            Ciclo a analizar.
-
-    Returns:
-        list:
-            Reglas aplicables.
-    """
-
-    applicable_rules = []
+    applicable = []
 
     for rule in ALL_RULES:
         condition_func = CONDITIONS.get(rule.condition)
@@ -71,27 +43,15 @@ def _get_applicable_rules(cycle):
             result = condition_func(cycle)
 
         if result:
-            applicable_rules.append(rule)
+            applicable.append((rule, result))
 
-    return applicable_rules
+    return applicable
 
 
 def _select_best_rule(rules):
-    """
-    Selecciona la regla con mayor prioridad.
-
-    Args:
-        rules:
-            Reglas aplicables.
-
-    Returns:
-        InsightRule:
-            Regla seleccionada.
-    """
-
     return max(
         rules,
-        key=lambda rule: rule.priority,
+        key=lambda item: item[0].priority,
     )
 
 
@@ -121,26 +81,7 @@ def _resolve_insight_phase(cycle, rule):
     return None
 
 
-def _create_insight(cycle, rule):
-    """
-    Crea y almacena un insight.
-
-    Si el ciclo ya posee un insight registrado,
-    se devuelve el existente para evitar duplicados.
-
-    Args:
-        cycle:
-            Ciclo analizado.
-
-        rule:
-            Regla seleccionada.
-
-    Returns:
-        Insight | None:
-            Insight existente o recién creado,
-            None si no se pudo determinar la fase.
-    """
-
+def _create_insight(cycle, rule, context=None):
     existing_insight = Insight.objects.filter(
         user=cycle.user,
         cycle=cycle,
@@ -154,6 +95,11 @@ def _create_insight(cycle, rule):
     if phase is None:
         return None
 
+    message = rule.message
+    if context and isinstance(context, str):
+        message = message.replace("{value}", context)
+        message = message.replace("{phase}", context)
+
     return Insight.objects.create(
         user=cycle.user,
         cycle=cycle,
@@ -161,7 +107,7 @@ def _create_insight(cycle, rule):
         type=rule.type,
         code=rule.code,
         title=rule.title,
-        message=rule.message,
+        message=message,
     )
 
 

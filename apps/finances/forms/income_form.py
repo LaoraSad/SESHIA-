@@ -2,6 +2,7 @@ from datetime import date
 
 from django import forms
 
+from apps.base.services.date_service import get_current_date
 from apps.finances.choices import CategoryType
 from apps.finances.models import Transaction
 from apps.finances.services.category_service import get_categories
@@ -41,10 +42,12 @@ class IncomeForm(forms.ModelForm):
 
     def clean_transaction_date(self):
         transaction_date = self.cleaned_data["transaction_date"]
+        simulated = get_current_date()
 
-        if transaction_date > date.today():
-            raise forms.ValidationError(
-                "La fecha no puede ser futura."
-            )
+        if simulated == date.today():
+            if transaction_date > simulated:
+                raise forms.ValidationError(
+                    "La fecha no puede ser futura."
+                )
 
         return transaction_date

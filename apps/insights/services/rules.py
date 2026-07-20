@@ -81,7 +81,7 @@ CYCLE_RULES = [
             "personalizadas."
         ),
         condition="has_enough_cycle_history",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="CYC002",
@@ -95,7 +95,7 @@ CYCLE_RULES = [
             "si llegan a presentarse."
         ),
         condition="stable_cycle_duration",
-        priority=4,
+        priority=3,
     ),
     InsightRule(
         code="CYC003",
@@ -110,7 +110,7 @@ CYCLE_RULES = [
             "un profesional de la salud."
         ),
         condition="variable_cycle_duration",
-        priority=2,
+        priority=4,
     ),
     InsightRule(
         code="CYC004",
@@ -123,7 +123,7 @@ CYCLE_RULES = [
             "recomendaciones más precisas y personalizadas."
         ),
         condition="insufficient_cycle_history",
-        priority=6,
+        priority=1,
     ),
     InsightRule(
         code="CYC005",
@@ -137,7 +137,7 @@ CYCLE_RULES = [
             "recomendaciones más útiles."
         ),
         condition="has_extended_cycle_history",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="CYC006",
@@ -151,7 +151,7 @@ CYCLE_RULES = [
             "cuando aparezcan."
         ),
         condition="stable_cycle_trend",
-        priority=4,
+        priority=3,
     ),
     InsightRule(
         code="CYC007",
@@ -179,7 +179,7 @@ CYCLE_RULES = [
             "recomendaciones más personalizadas."
         ),
         condition="not_enough_cycles_for_analysis",
-        priority=6,
+        priority=1,
     ),
 ]
 
@@ -188,16 +188,16 @@ DAILY_LOG_RULES = [
     InsightRule(
         code="DAY001",
         type=DAILY_LOG,
-        phase=PhaseType.MENSTRUAL,
-        title="Has registrado poca energía en esta fase",
+        phase=None,
+        title="Registraste poca energía en tu ciclo anterior",
         message=(
-            "En ciclos anteriores registraste niveles bajos "
-            "de energía durante esta fase. Si este patrón "
-            "continúa, podrías organizar las actividades más "
-            "exigentes para otros momentos del ciclo."
+            "En tu ciclo anterior registraste niveles bajos "
+            "de energía durante {phase}. Si este patrón se "
+            "repite, considera organizar actividades exigentes "
+            "en tus días de mayor energía."
         ),
         condition="previous_cycle_low_energy",
-        priority=2,
+        priority=5,
     ),
     InsightRule(
         code="DAY002",
@@ -211,7 +211,7 @@ DAILY_LOG_RULES = [
             "mayor esfuerzo físico o mental."
         ),
         condition="previous_cycle_high_energy",
-        priority=4,
+        priority=5,
     ),
     InsightRule(
         code="DAY003",
@@ -224,7 +224,7 @@ DAILY_LOG_RULES = [
             "puede ayudarte a anticipar cómo podrías sentirte."
         ),
         condition="previous_cycle_mood_pattern",
-        priority=3,
+        priority=5,
     ),
     InsightRule(
         code="DAY004",
@@ -237,7 +237,7 @@ DAILY_LOG_RULES = [
             "a reconocer mejor tus patrones personales."
         ),
         condition="previous_cycle_symptoms",
-        priority=2,
+        priority=4,
     ),
     InsightRule(
         code="DAY005",
@@ -250,7 +250,7 @@ DAILY_LOG_RULES = [
             "permitirá identificar patrones con mayor precisión."
         ),
         condition="multiple_previous_cycle_symptoms",
-        priority=2,
+        priority=4,
     ),
     InsightRule(
         code="DAY006",
@@ -263,7 +263,7 @@ DAILY_LOG_RULES = [
             "recomendaciones cada vez más personalizadas."
         ),
         condition="consistent_daily_logs",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="DAY007",
@@ -276,7 +276,7 @@ DAILY_LOG_RULES = [
             "recomendaciones adaptadas a tu ciclo."
         ),
         condition="insufficient_daily_logs",
-        priority=6,
+        priority=1,
     ),
     InsightRule(
         code="DAY008",
@@ -291,6 +291,58 @@ DAILY_LOG_RULES = [
         ),
         condition="uses_notes_frequently",
         priority=5,
+    ),
+    InsightRule(
+        code="DAY009",
+        type=DAILY_LOG,
+        phase=None,
+        title="Llevas varios días con poca energía",
+        message=(
+            "Has registrado {value} días consecutivos con "
+            "energía baja. Considera tomarlo con calma y "
+            "descansar cuando lo necesites."
+        ),
+        condition="current_consecutive_low_energy",
+        priority=6,
+    ),
+    InsightRule(
+        code="DAY010",
+        type=DAILY_LOG,
+        phase=None,
+        title="Tu estado de ánimo más frecuente",
+        message=(
+            "En lo que va del ciclo, tu estado de ánimo "
+            "más frecuente ha sido {value}. Reconocer "
+            "estos patrones te ayuda a conocerte mejor."
+        ),
+        condition="current_most_frequent_mood",
+        priority=6,
+    ),
+    InsightRule(
+        code="DAY011",
+        type=DAILY_LOG,
+        phase=None,
+        title="Llevas {value} días registrando",
+        message=(
+            "Llevas {value} días seguidos registrando tu "
+            "día a día. ¡Sigue así! Entre más información "
+            "tengas, mejores serán las recomendaciones."
+        ),
+        condition="current_logging_streak",
+        priority=6,
+    ),
+    InsightRule(
+        code="DAY012",
+        type=DAILY_LOG,
+        phase=None,
+        title="Un síntoma se repite en este ciclo",
+        message=(
+            "Has experimentado {value} en varios días de tu "
+            "ciclo. Seguir registrándolo te ayudará a identificar "
+            "patrones y comprender mejor cómo cambia tu cuerpo."
+        ),
+        condition="current_repeated_symptom",
+        priority=6,
     ),
 ]
 
@@ -307,7 +359,7 @@ FINANCE_RULES = [
             "puede ayudarte a identificar oportunidades de ahorro."
         ),
         condition="higher_total_expenses",
-        priority=3,
+        priority=4,
     ),
     InsightRule(
         code="FIN002",
@@ -320,7 +372,7 @@ FINANCE_RULES = [
             "contribuir a una mejor planificación financiera."
         ),
         condition="lower_total_expenses",
-        priority=5,
+        priority=4,
     ),
     InsightRule(
         code="FIN003",
@@ -334,7 +386,7 @@ FINANCE_RULES = [
             "administrar mejor tu presupuesto."
         ),
         condition="repeated_wellness_expenses",
-        priority=3,
+        priority=5,
     ),
     InsightRule(
         code="FIN004",
@@ -347,7 +399,7 @@ FINANCE_RULES = [
             "este patrón puede ayudarte a planificar mejor tus compras."
         ),
         condition="repeated_food_expenses",
-        priority=3,
+        priority=5,
     ),
     InsightRule(
         code="FIN005",
@@ -360,7 +412,7 @@ FINANCE_RULES = [
             "planificación financiera."
         ),
         condition="stable_expense_pattern",
-        priority=5,
+        priority=3,
     ),
     InsightRule(
         code="FIN006",
@@ -373,7 +425,7 @@ FINANCE_RULES = [
             "financieros."
         ),
         condition="insufficient_transactions",
-        priority=6,
+        priority=1,
     ),
 ]
 
@@ -390,7 +442,7 @@ MIXED_RULES = [
             "planificar mejor tu presupuesto."
         ),
         condition="previous_cycle_low_energy_with_higher_expenses",
-        priority=2,
+        priority=5,
     ),
     InsightRule(
         code="MIX002",
@@ -404,7 +456,7 @@ MIXED_RULES = [
             "ayudarte a tomar decisiones más conscientes."
         ),
         condition="mood_related_expenses",
-        priority=2,
+        priority=5,
     ),
     InsightRule(
         code="MIX003",
@@ -418,7 +470,7 @@ MIXED_RULES = [
             "facilitar una mejor planificación."
         ),
         condition="symptoms_related_expenses",
-        priority=2,
+        priority=5,
     ),
     InsightRule(
         code="MIX004",
@@ -459,7 +511,7 @@ MIXED_RULES = [
             "recomendaciones cada vez más personalizadas."
         ),
         condition="enough_data_for_mixed_analysis",
-        priority=5,
+        priority=2,
     ),
 ]
 
