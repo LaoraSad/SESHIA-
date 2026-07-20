@@ -81,7 +81,7 @@ CYCLE_RULES = [
             "personalizadas."
         ),
         condition="has_enough_cycle_history",
-        priority=2,
+        priority=1,
     ),
     InsightRule(
         code="CYC002",
@@ -95,7 +95,7 @@ CYCLE_RULES = [
             "si llegan a presentarse."
         ),
         condition="stable_cycle_duration",
-        priority=3,
+        priority=1,
     ),
     InsightRule(
         code="CYC003",
@@ -110,7 +110,7 @@ CYCLE_RULES = [
             "un profesional de la salud."
         ),
         condition="variable_cycle_duration",
-        priority=4,
+        priority=1,
     ),
     InsightRule(
         code="CYC004",
@@ -137,7 +137,7 @@ CYCLE_RULES = [
             "recomendaciones más útiles."
         ),
         condition="has_extended_cycle_history",
-        priority=2,
+        priority=1,
     ),
     InsightRule(
         code="CYC006",
@@ -151,7 +151,7 @@ CYCLE_RULES = [
             "cuando aparezcan."
         ),
         condition="stable_cycle_trend",
-        priority=3,
+        priority=1,
     ),
     InsightRule(
         code="CYC007",
@@ -165,7 +165,7 @@ CYCLE_RULES = [
             "este comportamiento se mantiene."
         ),
         condition="changing_cycle_trend",
-        priority=3,
+        priority=1,
     ),
     InsightRule(
         code="CYC008",
@@ -197,7 +197,7 @@ DAILY_LOG_RULES = [
             "en tus días de mayor energía."
         ),
         condition="previous_cycle_low_energy",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="DAY002",
@@ -211,7 +211,7 @@ DAILY_LOG_RULES = [
             "mayor esfuerzo físico o mental."
         ),
         condition="previous_cycle_high_energy",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="DAY003",
@@ -224,7 +224,7 @@ DAILY_LOG_RULES = [
             "puede ayudarte a anticipar cómo podrías sentirte."
         ),
         condition="previous_cycle_mood_pattern",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="DAY004",
@@ -232,12 +232,12 @@ DAILY_LOG_RULES = [
         phase=None,
         title="Un síntoma aparece con frecuencia",
         message=(
-            "Uno de los síntomas registrados se ha repetido "
-            "en varios ciclos. Llevar este seguimiento ayuda "
+            "En ciclos anteriores registraste {value} con "
+            "frecuencia. Llevar este seguimiento ayuda "
             "a reconocer mejor tus patrones personales."
         ),
         condition="previous_cycle_symptoms",
-        priority=4,
+        priority=2,
     ),
     InsightRule(
         code="DAY005",
@@ -250,7 +250,7 @@ DAILY_LOG_RULES = [
             "permitirá identificar patrones con mayor precisión."
         ),
         condition="multiple_previous_cycle_symptoms",
-        priority=4,
+        priority=2,
     ),
     InsightRule(
         code="DAY006",
@@ -290,7 +290,7 @@ DAILY_LOG_RULES = [
             "solo con síntomas o estados de ánimo."
         ),
         condition="uses_notes_frequently",
-        priority=5,
+        priority=2,
     ),
     InsightRule(
         code="DAY009",
@@ -303,7 +303,7 @@ DAILY_LOG_RULES = [
             "descansar cuando lo necesites."
         ),
         condition="current_consecutive_low_energy",
-        priority=6,
+        priority=3,
     ),
     InsightRule(
         code="DAY010",
@@ -316,7 +316,7 @@ DAILY_LOG_RULES = [
             "estos patrones te ayuda a conocerte mejor."
         ),
         condition="current_most_frequent_mood",
-        priority=6,
+        priority=3,
     ),
     InsightRule(
         code="DAY011",
@@ -329,7 +329,7 @@ DAILY_LOG_RULES = [
             "tengas, mejores serán las recomendaciones."
         ),
         condition="current_logging_streak",
-        priority=6,
+        priority=3,
     ),
     InsightRule(
         code="DAY012",
@@ -342,12 +342,52 @@ DAILY_LOG_RULES = [
             "patrones y comprender mejor cómo cambia tu cuerpo."
         ),
         condition="current_repeated_symptom",
-        priority=6,
+        priority=3,
+    ),
+    InsightRule(
+        code="DAY013",
+        type=DAILY_LOG,
+        phase=None,
+        title="Llevas {value} días sin registrar tu día a día",
+        message=(
+            "Llevas {value} días sin registrar cómo te sientes. "
+            "Registrar tu energía, estado de ánimo y síntomas "
+            "ayuda a identificar patrones importantes en tu ciclo."
+        ),
+        condition="days_without_logging_streak",
+        priority=5,
     ),
 ]
 
 
 FINANCE_RULES = [
+    # ── Prioridad 6: universales / temporales ────────────────────
+    InsightRule(
+        code="FIN007",
+        type=FINANCE,
+        phase=None,
+        title="Empieza a registrar tus gastos",
+        message=(
+            "Aún no registras gastos en este ciclo. Llevar un "
+            "control de tus finanzas te ayudará a identificar "
+            "patrones según tu ciclo menstrual."
+        ),
+        condition="no_transactions_this_cycle",
+        priority=6,
+    ),
+    InsightRule(
+        code="FIN010",
+        type=FINANCE,
+        phase=None,
+        title="Llevas {value} días sin registrar gastos",
+        message=(
+            "Llevas {value} días sin registrar movimientos "
+            "financieros. Registrar tus gastos te permitirá "
+            "tener una visión más completa de tu ciclo."
+        ),
+        condition="days_without_transactions_streak",
+        priority=6,
+    ),
     InsightRule(
         code="FIN001",
         type=FINANCE,
@@ -359,7 +399,7 @@ FINANCE_RULES = [
             "puede ayudarte a identificar oportunidades de ahorro."
         ),
         condition="higher_total_expenses",
-        priority=4,
+        priority=6,
     ),
     InsightRule(
         code="FIN002",
@@ -372,7 +412,85 @@ FINANCE_RULES = [
             "contribuir a una mejor planificación financiera."
         ),
         condition="lower_total_expenses",
-        priority=4,
+        priority=6,
+    ),
+    # ── Prioridad 5: análisis del ciclo actual ───────────────────
+    InsightRule(
+        code="FIN008",
+        type=FINANCE,
+        phase=None,
+        title="Conoce en qué fase gastas más",
+        message=(
+            "En lo que va del ciclo, la fase en la que más "
+            "has gastado es {value}. Conocer este patrón puede "
+            "ayudarte a planificar mejor tu presupuesto."
+        ),
+        condition="highest_spending_phase",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN009",
+        type=FINANCE,
+        phase=None,
+        title="Tu categoría de gasto más frecuente",
+        message=(
+            "En este ciclo, tu categoría de gasto más recurrente "
+            "ha sido {value}. Revisar estos hábitos te ayuda a "
+            "tomar decisiones financieras más conscientes."
+        ),
+        condition="most_frequent_category",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN013",
+        type=FINANCE,
+        phase=None,
+        title="Tus ingresos superan tus gastos",
+        message=(
+            "En este ciclo tus ingresos han sido mayores que "
+            "tus gastos. Mantener este equilibrio es clave "
+            "para una buena salud financiera."
+        ),
+        condition="income_exceeds_expenses",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN014",
+        type=FINANCE,
+        phase=None,
+        title="Tus gastos superan tus ingresos",
+        message=(
+            "En este ciclo tus gastos han superado tus ingresos. "
+            "Revisar tu presupuesto puede ayudarte a equilibrar "
+            "tus finanzas."
+        ),
+        condition="expenses_exceed_income",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN011",
+        type=FINANCE,
+        phase=None,
+        title="Tus gastos han aumentado",
+        message=(
+            "En los últimos 3 ciclos tus gastos han ido en "
+            "aumento. Revisar esta tendencia puede ayudarte "
+            "a identificar oportunidades de ahorro."
+        ),
+        condition="three_cycle_expense_increase",
+        priority=5,
+    ),
+    InsightRule(
+        code="FIN012",
+        type=FINANCE,
+        phase=None,
+        title="Tus gastos se han reducido",
+        message=(
+            "En los últimos 3 ciclos has logrado reducir "
+            "tus gastos. ¡Sigue así!"
+        ),
+        condition="three_cycle_expense_decrease",
+        priority=5,
     ),
     InsightRule(
         code="FIN003",
@@ -412,7 +530,7 @@ FINANCE_RULES = [
             "planificación financiera."
         ),
         condition="stable_expense_pattern",
-        priority=3,
+        priority=5,
     ),
     InsightRule(
         code="FIN006",
@@ -442,7 +560,7 @@ MIXED_RULES = [
             "planificar mejor tu presupuesto."
         ),
         condition="previous_cycle_low_energy_with_higher_expenses",
-        priority=5,
+        priority=3,
     ),
     InsightRule(
         code="MIX002",
@@ -456,7 +574,7 @@ MIXED_RULES = [
             "ayudarte a tomar decisiones más conscientes."
         ),
         condition="mood_related_expenses",
-        priority=5,
+        priority=3,
     ),
     InsightRule(
         code="MIX003",
@@ -470,7 +588,7 @@ MIXED_RULES = [
             "facilitar una mejor planificación."
         ),
         condition="symptoms_related_expenses",
-        priority=5,
+        priority=3,
     ),
     InsightRule(
         code="MIX004",
@@ -484,20 +602,6 @@ MIXED_RULES = [
             "momento para organizar actividades importantes."
         ),
         condition="high_energy_with_stable_expenses",
-        priority=4,
-    ),
-    InsightRule(
-        code="MIX005",
-        type=MIXED,
-        phase=PhaseType.LUTEAL,
-        title="Reconocer tus patrones te ayuda a planificar",
-        message=(
-            "La combinación de tus registros diarios y financieros "
-            "ha permitido identificar un patrón repetitivo durante "
-            "esta fase. Utilizar esta información puede ayudarte a "
-            "anticiparte y organizar mejor tus actividades."
-        ),
-        condition="repeated_phase_pattern",
         priority=3,
     ),
     InsightRule(
@@ -511,7 +615,33 @@ MIXED_RULES = [
             "recomendaciones cada vez más personalizadas."
         ),
         condition="enough_data_for_mixed_analysis",
-        priority=2,
+        priority=1,
+    ),
+    InsightRule(
+        code="MIX007",
+        type=MIXED,
+        phase=None,
+        title="Tu energía baja influye en tus gastos",
+        message=(
+            "En los días con poca energía, tus gastos se concentran "
+            "en {value}. Conocer esta relación puede ayudarte a "
+            "tomar decisiones más conscientes."
+        ),
+        condition="low_energy_with_category",
+        priority=3,
+    ),
+    InsightRule(
+        code="MIX008",
+        type=MIXED,
+        phase=None,
+        title="Tu estado de ánimo y tus gastos están conectados",
+        message=(
+            "Cuando tu estado de ánimo es {mood}, sueles gastar "
+            "en {category}. Identificar estos patrones te ayuda "
+            "a planificar mejor tu presupuesto."
+        ),
+        condition="mood_with_category",
+        priority=3,
     ),
 ]
 

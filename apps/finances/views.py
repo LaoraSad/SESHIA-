@@ -14,6 +14,7 @@ from apps.finances.services.category_service import (
     get_category,
     update_category,
 )
+from apps.cycles.services.cycles_service import get_active_cycle, get_cycle_history
 from apps.finances.services.transaction_service import (
     create_transaction,
     delete_transaction,
@@ -27,9 +28,20 @@ from apps.finances.services.transaction_service import (
 
 class TransactionListView(LoginRequiredMixin, View):
     def get(self, request):
-        transactions = get_transactions(request.user)
+        cycles = get_cycle_history(request.user)
+        cycle_id = request.GET.get("cycle_id")
+
+        if cycle_id:
+            selected_cycle = cycles.filter(id=cycle_id).first() or get_active_cycle(request.user)
+        else:
+            selected_cycle = get_active_cycle(request.user)
+
+        transactions = get_transactions(request.user, cycle=selected_cycle)
+
         return render(request, "finances/list.html", {
             "transactions": transactions,
+            "cycles": cycles,
+            "selected_cycle": selected_cycle,
         })
 
 

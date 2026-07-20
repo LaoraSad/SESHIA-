@@ -1,5 +1,6 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from django.views import View
 
@@ -19,7 +20,15 @@ class RegisterView(View):
         if not form.is_valid():
             return render(request, "auth/register.html", {"form": form})
 
-        user = form.save()
+        try:
+            user = form.save()
+        except IntegrityError:
+            form.add_error(
+                "email",
+                "Este correo electrónico ya está registrado.",
+            )
+            return render(request, "auth/register.html", {"form": form})
+
         login(request, user)
 
         return redirect("base:home")
