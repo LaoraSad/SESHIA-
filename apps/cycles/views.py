@@ -8,20 +8,23 @@ from apps.cycles.services.cycles_service import (
     get_cycle_history,
     get_dashboard_data,
     register_period,
-)
-from apps.cycles.services.cycles_service import (
     create_or_update_daily_log,
 )
+from apps.cycles.services.daily_log_service import get_daily_logs_by_cycle
 
 
 class DashboardView(LoginRequiredMixin, View):
     def get(self, request):
         context = get_dashboard_data(request.user)
 
-        context["form"] = CycleForm()
-        context["log_form"] = DailyLogForm(
+        log_form = DailyLogForm(
             instance=context["today_log"],
         )
+
+        context["form"] = CycleForm()
+        context["log_form"] = log_form
+        context["symptom_categories"] = log_form.symptom_categories
+        context["selected_symptoms"] = log_form.selected_symptoms
 
         return render(
             request,
@@ -73,9 +76,13 @@ class DailyLogView(LoginRequiredMixin, View):
     def get(self, request):
         context = get_dashboard_data(request.user)
 
-        context["form"] = DailyLogForm(
+        form = DailyLogForm(
             instance=context["today_log"],
         )
+
+        context["form"] = form
+        context["symptom_categories"] = form.symptom_categories
+        context["selected_symptoms"] = form.selected_symptoms
 
         return render(
             request,
@@ -90,6 +97,8 @@ class DailyLogView(LoginRequiredMixin, View):
             context = get_dashboard_data(request.user)
 
             context["form"] = form
+            context["symptom_categories"] = form.symptom_categories
+            context["selected_symptoms"] = form.selected_symptoms
 
             return render(
                 request,
@@ -105,7 +114,26 @@ class DailyLogView(LoginRequiredMixin, View):
             symptoms=form.cleaned_data["symptoms"],
         )
 
-        return redirect("cycles:dashboard")
+        return redirect("base:home")
+
+
+class DailyLogHistoryView(LoginRequiredMixin, View):
+    def get(self, request):
+        context = get_dashboard_data(request.user)
+        active_cycle = context.get("active_cycle")
+
+        daily_logs = []
+        if active_cycle:
+            daily_logs = get_daily_logs_by_cycle(active_cycle)
+
+        return render(
+            request,
+            "cycles/daily_log_history.html",
+            {
+                "daily_logs": daily_logs,
+                "active_cycle": active_cycle,
+            },
+        )
 
 
 class CycleHistoryView(LoginRequiredMixin, View):

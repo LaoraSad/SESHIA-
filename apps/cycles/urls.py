@@ -8,5 +8,6 @@ urlpatterns = [
     path('registrar/', views.RegisterPeriodView.as_view(), name='register-period'),
     path('calendario/', views.CalendarView.as_view(), name='calendar'),
     path('registro-diario/', views.DailyLogView.as_view(), name='daily-log'),
+    path('registro-diario/historial/', views.DailyLogHistoryView.as_view(), name='daily-log-history'),
     path('historial/', views.CycleHistoryView.as_view(), name='history'),
 ]
