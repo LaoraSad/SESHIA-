@@ -13,6 +13,11 @@ class CycleForm(forms.ModelForm):
             "expected_length",
             "notes",
         ]
+        widgets = {
+            "start_date": forms.DateInput(
+                attrs={"type": "date"},
+            ),
+        }
 
     def clean_start_date(self):
         start_date = self.cleaned_data["start_date"]
