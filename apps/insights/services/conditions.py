@@ -22,7 +22,7 @@ from decimal import Decimal
 
 from django.db.models import Avg, Count, Sum
 
-from apps.cycles.choices import EnergyLevel
+from apps.cycles.choices import EnergyLevel, Mood
 from apps.cycles.models import Cycle, DailyLog
 from apps.finances.choices import CategoryType
 from apps.finances.models import Transaction
@@ -258,36 +258,28 @@ def not_enough_cycles_for_analysis(user) -> bool:
 
 
 #Daily Log Conditions
-def previous_cycle_low_energy(cycle) -> bool:
-    """
-    Determina si en el ciclo anterior la usuaria registró
-    niveles bajos de energía durante la fase menstrual.
-
-    Args:
-        cycle:
-            Ciclo actual.
-
-    Returns:
-        bool:
-            True si existe al menos un registro con
-            energía baja en la fase menstrual.
-    """
-
+def previous_cycle_low_energy(cycle):
     previous_cycle = get_previous_cycle(cycle)
 
     if previous_cycle is None:
         return False
 
-    for daily_log in get_cycle_daily_logs(previous_cycle):
+    low_energy_logs = previous_cycle.daily_logs.filter(
+        energy_level__lte=EnergyLevel.LOW,
+    )
 
-        if (
-            daily_log.phase
-            and daily_log.phase.name.lower() == "menstrual"
-            and daily_log.energy_level == EnergyLevel.LOW
-        ):
-            return True
+    if not low_energy_logs.exists():
+        return False
 
-    return False
+    phases = set()
+    for log in low_energy_logs:
+        if log.phase:
+            phases.add(log.phase.name)
+
+    if phases:
+        return ", ".join(sorted(phases))
+
+    return True
 
 
 def previous_cycle_high_energy(cycle) -> bool:
@@ -487,6 +479,84 @@ def _total_expenses(cycle) -> Decimal:
             total += transaction.amount
 
     return total
+
+
+# Current Cycle Conditions
+def current_consecutive_low_energy(cycle):
+    logs = cycle.daily_logs.filter(
+        energy_level__isnull=False,
+    ).order_by("-log_date")
+
+    if not logs.exists():
+        return False
+
+    count = 0
+    for log in logs:
+        if log.energy_level <= EnergyLevel.LOW:
+            count += 1
+        else:
+            break
+
+    if count >= 3:
+        return str(count)
+
+    return False
+
+
+def current_most_frequent_mood(cycle):
+    logs = cycle.daily_logs.exclude(
+        mood__isnull=True,
+    ).exclude(mood="")
+
+    if not logs.exists():
+        return False
+
+    total = logs.count()
+    mood_counts = {}
+    for log in logs:
+        mood_counts[log.mood] = mood_counts.get(log.mood, 0) + 1
+
+    most_common = max(mood_counts, key=mood_counts.get)
+    percentage = mood_counts[most_common] / total
+
+    if percentage >= 0.5:
+        return dict(Mood.choices).get(most_common, most_common)
+
+    return False
+
+
+def current_logging_streak(cycle):
+    logs = cycle.daily_logs.order_by("-log_date")
+    if not logs.exists():
+        return False
+
+    count = 1
+    for i in range(len(logs) - 1):
+        if (logs[i].log_date - logs[i + 1].log_date).days == 1:
+            count += 1
+        else:
+            break
+
+    if count >= 5:
+        return str(count)
+
+    return False
+
+
+def current_repeated_symptom(cycle):
+    from django.db.models import Count
+
+    symptom_counts = (
+        cycle.daily_logs.exclude(symptoms=None)
+        .values("symptoms__name")
+        .annotate(count=Count("symptoms"))
+        .filter(count__gte=2)
+    )
+
+    if symptom_counts.exists():
+        return symptom_counts.first()["symptoms__name"]
+
+    return False
 
 
 # Finance Conditions
@@ -798,6 +868,10 @@ CONDITIONS = {
     "consistent_daily_logs": consistent_daily_logs,
     "insufficient_daily_logs": insufficient_daily_logs,
     "uses_notes_frequently": uses_notes_frequently,
+    "current_consecutive_low_energy": current_consecutive_low_energy,
+    "current_most_frequent_mood": current_most_frequent_mood,
+    "current_logging_streak": current_logging_streak,
+    "current_repeated_symptom": current_repeated_symptom,
 
     # Finance
     "higher_total_expenses": higher_total_expenses,

@@ -1,9 +1,8 @@
-from datetime import date
-
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
 
+from apps.base.services.date_service import get_current_date
 from apps.cycles.choices import CycleStatus
 
 
@@ -97,23 +96,11 @@ class Cycle(models.Model):
 
     @property
     def is_finished(self):
-        """
-        Indica si el ciclo ya finalizó.
-
-        Returns:
-            bool: True si el ciclo tiene una fecha de finalización.
-        """
-        return self.end_date is not None
+        return self.status == CycleStatus.COMPLETED
 
     @property
     def is_active(self):
-        """
-        Indica si el ciclo continúa activo.
-
-        Returns:
-            bool: True si el ciclo aún no ha finalizado.
-        """
-        return not self.is_finished
+        return self.status == CycleStatus.ACTIVE
 
     @property
     def day_number(self):
@@ -127,7 +114,7 @@ class Cycle(models.Model):
         Returns:
             int: Día correspondiente dentro del ciclo.
         """
-        reference_date = date.today() if self.status == CycleStatus.ACTIVE else self.end_date
+        reference_date = get_current_date() if self.status == CycleStatus.ACTIVE else self.end_date
         return (reference_date - self.start_date).days + 1
 
     @property
@@ -151,27 +138,22 @@ class Cycle(models.Model):
         Returns:
             Phase | None: Fase actual del ciclo.
         """
-        return self.get_phase_for_date(date.today())
+        return self.get_phase_for_date(get_current_date())
 
 
     # Public methods
 
     def get_phase_for_date(self, target_date):
-        """
-        Obtiene la fase correspondiente a una fecha determinada.
-
-        Args:
-            target_date (date): Fecha a consultar.
-
-        Returns:
-            Phase | None: Fase encontrada o None si no existe.
-        """
         cycle_phase = self.phases.filter(
             start_date__lte=target_date,
             end_date__gte=target_date,
         ).first()
 
-        return cycle_phase.phase if cycle_phase else None
+        if cycle_phase is not None:
+            return cycle_phase.phase
+
+        last = self.phases.order_by("-end_date").first()
+        return last.phase if last else None
 
     def __str__(self):
         return f"Ciclo de {self.user.full_name} ({self.start_date:%d/%m/%Y})"

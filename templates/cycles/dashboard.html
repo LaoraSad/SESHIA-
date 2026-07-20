@@ -3,7 +3,7 @@
 {% block title %}Mi ciclo | Seshia{% endblock %}
 
 {% block content %}
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
     <div>
         <h1 class="text-3xl font-bold text-seshia-700">Hola, {{ user.first_name }}</h1>
         <p class="text-gray-500">Este es el resumen de tu ciclo.</p>
@@ -18,6 +18,28 @@
             Historial
         </a>
     </div>
+</div>
+
+<!-- Simulador de fecha -->
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-4 flex items-center justify-between mb-6">
+    <form method="post" action="{% url 'base:previous-day' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="px-4 py-2 rounded-xl bg-seshia-100 text-seshia-600 font-medium hover:bg-seshia-200 transition text-sm">
+            ← Día anterior
+        </button>
+    </form>
+    <div class="text-center">
+        <p class="text-sm text-gray-500">Fecha simulada</p>
+        <p class="text-lg font-bold text-seshia-700">{{ current_date|date:"d/m/Y" }}</p>
+    </div>
+    <form method="post" action="{% url 'base:next-day' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="px-4 py-2 rounded-xl bg-seshia-600 text-white font-medium hover:bg-seshia-700 transition text-sm">
+            Día siguiente →
+        </button>
+    </form>
 </div>
 
 {% if active_cycle %}

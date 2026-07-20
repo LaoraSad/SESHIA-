@@ -16,6 +16,28 @@
         <p class="text-gray-500">Este es tu resumen financiero y de ciclo</p>
     </div>
 
+    <!-- Simulador de fecha -->
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-4 flex items-center justify-between mb-8">
+        <form method="post" action="{% url 'base:previous-day' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="px-4 py-2 rounded-xl bg-seshia-100 text-seshia-600 font-medium hover:bg-seshia-200 transition text-sm">
+                ← Día anterior
+            </button>
+        </form>
+        <div class="text-center">
+            <p class="text-sm text-gray-500">Fecha simulada</p>
+            <p class="text-lg font-bold text-seshia-700">{{ current_date|date:"d/m/Y" }}</p>
+        </div>
+        <form method="post" action="{% url 'base:next-day' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="px-4 py-2 rounded-xl bg-seshia-600 text-white font-medium hover:bg-seshia-700 transition text-sm">
+                Día siguiente →
+            </button>
+        </form>
+    </div>
+
     <!-- Boton registro diario -->
     <a href="{% url 'cycles:daily-log' %}"
        class="block w-full bg-white text-seshia-700 text-center font-semibold py-3.5 rounded-xl hover:bg-seshia-700 hover:text-white transition mb-8 shadow-sm border border-seshia-200">
@@ -46,6 +68,32 @@
             </p>
         </div>
     </div>
+
+    {% if latest_insight %}
+    <!-- Insight del ciclo activo -->
+    <div class="mb-6">
+        <a href="{% url 'insights:detail' %}"
+           class="block bg-seshia-700 text-white rounded-2xl p-5 sm:p-6 transition group">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-xs font-semibold">
+                        {{ latest_insight.get_type_display }}
+                    </span>
+                    {% if latest_insight.phase %}
+                    <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-xs font-semibold">
+                        {{ latest_insight.phase.name }}
+                    </span>
+                    {% endif %}
+                </div>
+                <span class="text-white/60 text-sm group-hover:text-white group-hover:translate-x-0.5 transition">
+                    Ver insight →
+                </span>
+            </div>
+            <h3 class="font-bold text-lg mb-1">{{ latest_insight.title }}</h3>
+            <p class="text-sm text-white/80">{{ latest_insight.message|truncatechars:120 }}</p>
+        </a>
+    </div>
+    {% endif %}
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
