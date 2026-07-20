@@ -57,14 +57,25 @@ def create_category(
         automáticamente en ``False``.
     """
 
-    if not name.strip():
+    name = name.strip()
+
+    if not name:
         raise ValueError(
             "El nombre de la categoría no puede estar vacío."
         )
 
+    if Category.objects.filter(
+        user=user,
+        category_type=category_type,
+        name__iexact=name,
+    ).exists():
+        raise ValueError(
+            f"Ya existe una categoría de tipo '{category_type}' con el nombre '{name}'."
+        )
+
     return Category.objects.create(
         user=user,
-        name=name.strip(),
+        name=name,
         category_type=category_type,
         icon=icon,
         is_default=False,
@@ -120,7 +131,18 @@ def update_category(
             "El nombre de la categoría no puede estar vacío."
         )
 
-    category.name = name.strip()
+    new_name = name.strip()
+
+    if Category.objects.filter(
+        user=category.user,
+        category_type=category_type,
+        name__iexact=new_name,
+    ).exclude(pk=category.pk).exists():
+        raise ValueError(
+            f"Ya existe una categoría de tipo '{category_type}' con el nombre '{new_name}'."
+        )
+
+    category.name = new_name
     category.category_type = category_type
     category.icon = icon
 

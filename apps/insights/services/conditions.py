@@ -24,6 +24,7 @@ from django.db.models import Avg, Count, Sum
 
 from apps.cycles.choices import EnergyLevel
 from apps.cycles.models import Cycle, DailyLog
+from apps.finances.choices import CategoryType
 from apps.finances.models import Transaction
 
 
@@ -677,6 +678,106 @@ def enough_data_for_mixed_analysis(cycle) -> bool:
     )
 
 
+def _has_category_expenses_in_phase(cycle, category_names, phase_name):
+    """Helper: True si el ciclo tiene gastos en categorias dadas durante una fase."""
+    return cycle.transactions.filter(
+        is_active=True,
+        category__name__in=category_names,
+        category__category_type=CategoryType.EXPENSE,
+        cycle_phase__phase__name__iexact=phase_name,
+    ).exists()
+
+
+def repeated_wellness_expenses(cycle) -> bool:
+    """
+    Determina si la usuaria suele gastar en bienestar
+    durante la fase menstrual en ciclos consecutivos.
+    """
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    wellness_names = ["Cuidado menstrual", "Compras", "Ocio"]
+
+    return (
+        _has_category_expenses_in_phase(cycle, wellness_names, "menstrual")
+        and _has_category_expenses_in_phase(previous_cycle, wellness_names, "menstrual")
+    )
+
+
+def repeated_food_expenses(cycle) -> bool:
+    """
+    Determina si la usuaria suele gastar más en alimentación
+    durante la fase lútea en ciclos consecutivos.
+    """
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    return (
+        _has_category_expenses_in_phase(cycle, ["Alimentación"], "lútea")
+        and _has_category_expenses_in_phase(previous_cycle, ["Alimentación"], "lútea")
+    )
+
+
+def symptoms_related_expenses(cycle) -> bool:
+    """
+    Determina si los síntomas durante la fase menstrual
+    coinciden con gastos en bienestar.
+    """
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    has_symptoms = previous_cycle.daily_logs.filter(
+        log_date__gte=previous_cycle.start_date,
+        symptoms__isnull=False,
+    ).exists()
+
+    if not has_symptoms:
+        return False
+
+    return _has_category_expenses_in_phase(
+        previous_cycle,
+        ["Cuidado menstrual", "Compras", "Ocio"],
+        "menstrual",
+    )
+
+
+def repeated_phase_pattern(cycle) -> bool:
+    """
+    Determina si existe un patrón repetitivo combinando
+    registros diarios y financieros en la fase lútea.
+    """
+    previous_cycle = get_previous_cycle(cycle)
+
+    if previous_cycle is None:
+        return False
+
+    luteal_phase = previous_cycle.phases.filter(
+        phase__name__iexact="lútea",
+    ).first()
+
+    if luteal_phase is None:
+        return False
+
+    has_daily_logs = previous_cycle.daily_logs.filter(
+        log_date__gte=luteal_phase.start_date,
+        log_date__lte=luteal_phase.end_date,
+    ).exists()
+
+    has_transactions = previous_cycle.transactions.filter(
+        is_active=True,
+        transaction_date__gte=luteal_phase.start_date,
+        transaction_date__lte=luteal_phase.end_date,
+    ).exists()
+
+    return has_daily_logs and has_transactions
+
+
 CONDITIONS = {
     # Cycle
     "has_enough_cycle_history": has_enough_cycle_history,
@@ -703,11 +804,15 @@ CONDITIONS = {
     "lower_total_expenses": lower_total_expenses,
     "stable_expense_pattern": stable_expense_pattern,
     "insufficient_transactions": insufficient_transactions,
+    "repeated_wellness_expenses": repeated_wellness_expenses,
+    "repeated_food_expenses": repeated_food_expenses,
 
     # Mixed
     "previous_cycle_low_energy_with_higher_expenses": previous_cycle_low_energy_with_higher_expenses,
     "mood_related_expenses": mood_related_expenses,
     "high_energy_with_stable_expenses": high_energy_with_stable_expenses,
     "enough_data_for_mixed_analysis": enough_data_for_mixed_analysis,
+    "symptoms_related_expenses": symptoms_related_expenses,
+    "repeated_phase_pattern": repeated_phase_pattern,
 }
 
