@@ -3,7 +3,7 @@
 {% block title %}{{ title }} | Seshia{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
     <h1 class="text-3xl font-bold text-seshia-700">{{ title }}</h1>
     <a href="{% url 'finances:category-list' %}"
        class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">

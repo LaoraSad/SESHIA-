@@ -3,7 +3,7 @@
 {% block title %}Historial de registros | Seshia{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
     <div>
         <h1 class="text-3xl font-bold text-seshia-700">Historial de registros</h1>
         <p class="text-gray-500">Tus registros diarios de este ciclo.</p>
@@ -19,9 +19,9 @@
     <div class="space-y-4">
         {% for log in daily_logs %}
         <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 sm:p-6">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <p class="font-semibold text-seshia-700">{{ log.log_date|date:"l d \d\e F \d\e\l Y" }}</p>
-                <span class="text-xs text-gray-400">Día {{ log.day_number }}</span>
+                <span class="text-xs text-gray-400 whitespace-nowrap">Día {{ log.day_number }}</span>
             </div>
 
             <div class="flex flex-wrap gap-2 mb-3">

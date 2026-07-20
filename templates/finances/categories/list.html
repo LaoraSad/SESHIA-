@@ -9,7 +9,7 @@
         <p class="text-gray-500">Organiza tus ingresos y gastos.</p>
     </div>
 
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
         <a href="{% url 'finances:create-category' %}"
            class="px-4 py-2 rounded-xl bg-seshia-600 hover:bg-seshia-700 text-white font-medium transition text-sm">
             + Nueva categoría
@@ -24,23 +24,25 @@
 {% if categories %}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for category in categories %}
-    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 flex items-center gap-4">
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5">
 
-        <div class="w-11 h-11 rounded-xl bg-seshia-100 flex items-center justify-center text-lg shrink-0">
-            {{ category.icon|default:"💜" }}
-        </div>
+        <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-seshia-100 flex items-center justify-center text-lg shrink-0">
+                {{ category.icon|default:"💜" }}
+            </div>
 
-        <div class="flex-1 min-w-0">
-            <p class="font-semibold truncate">{{ category.name }}</p>
-            {% if category.is_income %}
-            <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Ingreso</span>
-            {% else %}
-            <span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">Gasto</span>
-            {% endif %}
+            <div class="flex-1 min-w-0">
+                <p class="font-semibold break-words">{{ category.name }}</p>
+                {% if category.is_income %}
+                <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Ingreso</span>
+                {% else %}
+                <span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">Gasto</span>
+                {% endif %}
+            </div>
         </div>
 
         {% if not category.is_default %}
-        <div class="flex flex-col items-end gap-1">
+        <div class="flex items-center justify-end gap-3 mt-3 pt-3 border-t border-seshia-50">
             <a href="{% url 'finances:update-category' category.id %}"
                class="text-sm text-seshia-500 hover:underline font-medium">
                 Editar
@@ -54,7 +56,7 @@
             </form>
         </div>
         {% else %}
-        <span class="text-xs text-gray-400">Sistema</span>
+        <p class="text-xs text-gray-400 text-right mt-3 pt-3 border-t border-seshia-50">Sistema</p>
         {% endif %}
     </div>
     {% endfor %}

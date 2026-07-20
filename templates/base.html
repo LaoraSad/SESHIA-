@@ -9,6 +9,8 @@
         {% block title %}Seshia{% endblock %}
     </title>
 
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -82,19 +84,51 @@
     <div class="flex flex-col md:flex-row min-h-screen">
 
         {% if user.is_authenticated %}
-        <!-- ================= Sidebar (usuaria logueada) ================= -->
-        <aside class="bg-white border-b md:border-b-0 md:border-r border-seshia-100 md:w-64 shrink-0">
-            <div class="px-6 py-5 flex items-center gap-2">
-                <!-- Logo Seshia (corona) -->
-                <svg viewBox="0 0 40 34" class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- ================= Barra superior movil ================= -->
+        <div class="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-seshia-100 sticky top-0 z-20">
+            <a href="{% url 'base:home' %}" class="inline-flex items-center gap-2">
+                <svg viewBox="0 0 40 34" class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <circle cx="20" cy="5" r="4" fill="#9F7AD1"/>
                     <path d="M4 12 L11 20 L20 10 L29 20 L36 12 L33 32 L7 32 Z" fill="#4A1D7A"/>
                 </svg>
-                <span class="text-2xl font-extrabold text-seshia-700">Seshia</span>
+                <span class="text-xl font-extrabold text-seshia-700">Seshia</span>
+            </a>
+            <button type="button" id="sidebar-open"
+                    class="p-2 rounded-lg text-seshia-700 hover:bg-seshia-100 transition"
+                    aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- ================= Fondo oscuro (movil) ================= -->
+        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/40 z-30 md:hidden"></div>
+
+        <!-- ================= Sidebar (usuaria logueada) ================= -->
+        <aside id="sidebar"
+               class="fixed md:static inset-y-0 left-0 z-40 w-64 shrink-0 bg-white border-r border-seshia-100
+                      -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
+            <div class="px-6 py-5 flex items-center justify-between gap-2">
+                <a href="{% url 'base:home' %}" class="inline-flex items-center gap-2">
+                    <!-- Logo Seshia (corona) -->
+                    <svg viewBox="0 0 40 34" class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="20" cy="5" r="4" fill="#9F7AD1"/>
+                        <path d="M4 12 L11 20 L20 10 L29 20 L36 12 L33 32 L7 32 Z" fill="#4A1D7A"/>
+                    </svg>
+                    <span class="text-2xl font-extrabold text-seshia-700">Seshia</span>
+                </a>
+                <button type="button" id="sidebar-close"
+                        class="md:hidden p-1.5 rounded-lg text-seshia-400 hover:bg-seshia-100 hover:text-seshia-600 transition"
+                        aria-label="Cerrar menu">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
             <!-- Navegacion -->
-            <nav class="flex md:flex-col gap-1 px-3 pb-4 overflow-x-auto">
+            <nav class="flex flex-col gap-1 px-3 pb-4">
                 <a href="{% url 'base:home' %}"
                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap hover:bg-seshia-100 hover:text-seshia-600 transition">
                     <span class="w-2 h-2 rounded-full bg-seshia-300"></span> Home
@@ -117,7 +151,7 @@
                 </a>
 
                 <!-- Cerrar sesion -->
-                <form method="post" action="{% url 'users:logout' %}" class="md:mt-6">
+                <form method="post" action="{% url 'users:logout' %}" class="mt-6">
                     {% csrf_token %}
                     <button type="submit"
                             class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap text-gray-400 hover:bg-red-50 hover:text-red-500 transition w-full text-left">
@@ -158,6 +192,35 @@
             </div>
         </main>
     </div>
+
+    <script>
+        (function () {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebar-overlay');
+            var openBtn = document.getElementById('sidebar-open');
+            var closeBtn = document.getElementById('sidebar-close');
+
+            if (!sidebar || !overlay || !openBtn) return;
+
+            function openSidebar() {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                openBtn.setAttribute('aria-expanded', 'true');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                openBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            openBtn.addEventListener('click', openSidebar);
+            closeBtn && closeBtn.addEventListener('click', closeSidebar);
+            overlay.addEventListener('click', closeSidebar);
+        })();
+    </script>
 
     {% block js %}{% endblock %}
 </body>
