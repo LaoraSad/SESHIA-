@@ -25,6 +25,21 @@
     </div>
 </div>
 
+{% if cycles.count > 1 %}
+<div class="mb-6">
+    <form method="get" id="cycle-selector">
+        <select name="cycle_id" onchange="this.form.submit()"
+                class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-seshia-200 bg-white text-seshia-700 font-medium text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-seshia-400 cursor-pointer">
+            {% for cycle in cycles %}
+            <option value="{{ cycle.id }}" {% if cycle.id == selected_cycle.id %}selected{% endif %}>
+                Ciclo #{{ forloop.revcounter0|add:1 }} — {{ cycle.start_date|date:"d M Y" }}{% if cycle.end_date %} – {{ cycle.end_date|date:"d M Y" }}{% endif %}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+{% endif %}
+
 {% if transactions %}
 <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 divide-y divide-seshia-100">
     {% for transaction in transactions %}

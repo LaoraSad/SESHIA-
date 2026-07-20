@@ -18,7 +18,7 @@ from decimal import Decimal
 
 from django.db.models import QuerySet
 
-from apps.cycles.services.cycles_service import get_cycle_by_date, get_cycle_phase_by_date
+from apps.cycles.services.cycles_service import get_active_cycle, get_cycle_by_date, get_cycle_phase_by_date
 from apps.finances.models import Category, Transaction
 from apps.users.models import User
 
@@ -253,25 +253,36 @@ def get_transaction(
 
 def get_transactions(
     user: User,
+    cycle=None,
 ) -> QuerySet[Transaction]:
     """
-    Obtiene todas las transacciones financieras de una usuaria.
+    Obtiene las transacciones financieras de una usuaria para un ciclo dado.
 
     Args:
         user (User):
             Usuaria propietaria de las transacciones.
 
+        cycle (Cycle | None):
+            Ciclo para filtrar. Si es None, se usa el ciclo activo.
+
     Returns:
         QuerySet[Transaction]:
-            Conjunto de transacciones pertenecientes a la usuaria.
+            Conjunto de transacciones del ciclo indicado.
 
     Notes:
         Las transacciones se devuelven utilizando el orden definido
         en el modelo.
     """
 
+    if cycle is None:
+        cycle = get_active_cycle(user)
+
+    if cycle is None:
+        return Transaction.objects.none()
+
     return Transaction.objects.filter(
         user=user,
+        cycle=cycle,
         is_active=True,
     )
 
