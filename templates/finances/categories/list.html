@@ -39,7 +39,7 @@
             {% endif %}
         </div>
 
-        {% if not category.is_system %}
+        {% if not category.is_default %}
         <div class="flex flex-col items-end gap-1">
             <a href="{% url 'finances:update-category' category.id %}"
                class="text-sm text-seshia-500 hover:underline font-medium">

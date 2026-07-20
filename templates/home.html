@@ -1,15 +1,136 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block title %}Inicio | Seshia{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center justify-center py-24">
-    <h1 class="text-5xl font-bold text-indigo-600 mb-4">
-        Bienvenido a Seshia
-    </h1>
 
-    <p class="text-lg text-gray-600 text-center max-w-2xl">
-        Hola luisita, es una prueba de recarga de cambios
-    </p>
-</div>
+{% if user.is_authenticated %}
+
+    <!-- Saludo -->
+    <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-seshia-900 mb-1">
+            Hola, {{ user.first_name|default:"bienvenida" }}
+        </h1>
+        <p class="text-gray-500">Este es tu resumen financiero y de ciclo</p>
+    </div>
+
+    <!-- Boton registro diario -->
+    <a href="{% url 'cycles:daily-log' %}"
+       class="block w-full bg-white text-seshia-700 text-center font-semibold py-3.5 rounded-xl hover:bg-seshia-700 hover:text-white transition mb-8 shadow-sm border border-seshia-200">
+        📝 ¿Cómo te sientes hoy?
+    </a>
+
+    <!-- Tarjetas de resumen -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-8">
+        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+            <p class="text-sm text-gray-500 mb-2">Balance total</p>
+            <p class="text-2xl sm:text-3xl font-bold text-seshia-900 break-words">${{ balance|default:"0" }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+            <p class="text-sm text-gray-500 mb-2">Ingresos</p>
+            <p class="text-2xl sm:text-3xl font-bold text-seshia-900 break-words">${{ income|default:"0" }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+            <p class="text-sm text-gray-500 mb-2">Gastos</p>
+            <p class="text-2xl sm:text-3xl font-bold text-seshia-900 break-words">${{ spent|default:"0" }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+            <p class="text-sm text-gray-500 mb-2">Día del ciclo</p>
+            <p class="text-2xl sm:text-3xl font-bold text-seshia-900">
+                {% if active_cycle %}{{ cycle_day }} / {{ cycle_length }}{% else %}—{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Transacciones recientes -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5 sm:p-8">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-seshia-900">Transacciones recientes</h2>
+                <a href="{% url 'finances:list' %}" class="text-sm font-semibold text-seshia-600 hover:underline">Ver todas</a>
+            </div>
+
+            {% if recent_transactions %}
+                <div class="divide-y divide-seshia-50">
+                    {% for transaction in recent_transactions %}
+                    <div class="flex items-center gap-4 py-4">
+                        <div class="h-11 w-11 rounded-xl bg-seshia-100 flex items-center justify-center text-lg">
+                            {{ transaction.category.icon|default:"💜" }}
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">{{ transaction.category.name }}</p>
+                            <p class="text-sm text-gray-400">
+                                {{ transaction.description|default:"" }}
+                                {% if transaction.description %} · {% endif %}
+                                {{ transaction.transaction_date|date:"d M" }}
+                            </p>
+                        </div>
+
+                        <p class="font-bold {% if transaction.category.is_income %}text-emerald-600{% else %}text-gray-800{% endif %}">
+                            {% if transaction.category.is_income %}+{% else %}−{% endif %}${{ transaction.amount }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-400 py-6">Aún no tienes transacciones. Registra tu primer ingreso o gasto en Finanzas.</p>
+            {% endif %}
+        </div>
+
+        <!-- Tarjeta del ciclo -->
+        <div class="bg-gradient-to-b from-seshia-700 to-seshia-900 rounded-2xl shadow-lg p-6 sm:p-8 flex flex-col items-center justify-center text-white text-center">            {% if active_cycle %}
+                <svg viewBox="0 0 120 120" class="w-36 sm:w-44 h-36 sm:h-44 mb-6">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#ffffff" stroke-width="8"
+                            stroke-linecap="round"
+                            stroke-dasharray="339.3"
+                            stroke-dashoffset="{{ ring_offset }}"
+                            transform="rotate(-90 60 60)"/>
+                    <text x="60" y="58" text-anchor="middle" fill="#ffffff" font-size="20" font-weight="700">Día {{ cycle_day }}</text>
+                    <text x="60" y="76" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9">{{ current_phase|default:"Sin fase" }}</text>
+                </svg>
+
+                <p class="font-semibold">Próximo período en {{ days_to_next }} día{{ days_to_next|pluralize:"s" }}</p>
+            {% else %}
+                <img src="{% static 'img/logo.png' %}" alt="Seshia" class="h-16 w-16 mb-4 brightness-0 invert opacity-90">
+                <p class="font-semibold mb-2">Aún no tienes un ciclo activo</p>
+                <p class="text-sm text-seshia-100 mb-6">Registra tu período para ver aquí tu progreso.</p>
+                <a href="{% url 'cycles:dashboard' %}" class="bg-white text-seshia-700 px-6 py-2.5 rounded-full font-semibold hover:bg-seshia-50 transition">
+                    Registrar período
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+{% else %}
+
+    <!-- Visitante sin sesión -->
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+        <img src="{% static 'img/logo.svg.png' %}" alt="Seshia" class="h-24 w-24 mb-6">
+
+        <h1 class="text-5xl font-bold text-seshia-900 mb-4">Bienvenida a Seshia</h1>
+
+        <p class="text-lg text-gray-600 max-w-2xl mb-10">
+            Conoce tu ciclo, registra cómo te sientes y toma el control de tus
+            finanzas con recomendaciones pensadas para ti.
+        </p>
+
+        <div class="flex gap-4">
+            <a href="{% url 'users:register' %}" class="bg-seshia-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-seshia-700 transition">
+                Crear cuenta
+            </a>
+            <a href="{% url 'users:login' %}" class="border border-seshia-200 text-seshia-700 px-8 py-3 rounded-full font-semibold hover:bg-seshia-100 transition">
+                Iniciar sesión
+            </a>
+        </div>
+    </div>
+
+{% endif %}
 {% endblock %}
