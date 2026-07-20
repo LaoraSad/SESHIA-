@@ -6,22 +6,6 @@ El sistema integra información relacionada con los ciclos menstruales, síntoma
 
 El proyecto está desarrollado siguiendo una arquitectura modular basada en dominios de negocio, facilitando el mantenimiento, la escalabilidad y el trabajo colaborativo.
 
-## Cómo se ejecuta?
-```bash
-docker compose up --build -d
-```
-
-si hiciste cambios
-```bash
-# paso 1 
-docker compose down 
-
-# paso 2
-docker compose up
-```
-
----
-
 # Características
 
 - Registro e inicio de sesión mediante correo electrónico.
@@ -96,8 +80,10 @@ docker compose build
 Levantar los contenedores:
 
 ```bash
-docker compose up
+docker compose up --build -d
 ```
+
+---
 
 Aplicar las migraciones:
 
