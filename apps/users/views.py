@@ -22,7 +22,7 @@ class RegisterView(View):
         user = form.save()
         login(request, user)
 
-        return redirect("home")
+        return redirect("base:home")
 
 
 class LoginView(View):
@@ -38,13 +38,13 @@ class LoginView(View):
 
         login(request, form.get_user())
 
-        return redirect("home")
+        return redirect("base:home")
 
 
 class LogoutView(LoginRequiredMixin, View):
     def post(self, request):
         logout(request)
-        return redirect("home")
+        return redirect("base:home")
 
 
 class ProfileView(LoginRequiredMixin, View):
@@ -62,4 +62,4 @@ class UpdateProfileView(LoginRequiredMixin, View):
 
         form.save()
 
-        return redirect("profile")
+        return redirect("users:profile")

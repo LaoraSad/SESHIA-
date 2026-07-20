@@ -1,10 +1,12 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from . import views
 
 app_name = 'finances'
 
 urlpatterns = [
     path('', views.TransactionListView.as_view(), name='list'),
+    path('agregar/', RedirectView.as_view(pattern_name='finances:create-expense'), name='add-transaction'),
     path('crear-gasto/', views.CreateExpenseView.as_view(), name='create-expense'),
     path('crear-ingreso/', views.CreateIncomeView.as_view(), name='create-income'),
     path('editar/<int:transaction_id>/', views.UpdateTransactionView.as_view(), name='update-transaction'),

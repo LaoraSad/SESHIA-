@@ -17,12 +17,15 @@ Notes:
 
 from datetime import date, timedelta
 from typing import Any
+from django.db import transaction
 from django.db.models import QuerySet
 
 from apps.cycles.choices import CycleStatus, EnergyLevel, Mood
 from apps.cycles.models import Cycle, CyclePhase
 from apps.cycles.models.daily_log import DailyLog
+from apps.cycles.models.phase import Phase
 from apps.cycles.models.symptom import Symptom
+from apps.insights.services.insight_service import generate_insight
 from apps.cycles.services.daily_log_service import create_daily_log, get_daily_log_by_date, update_daily_log
 from apps.users.models import User
 
@@ -330,6 +333,7 @@ def get_cycle_history(
     )
 
 
+@transaction.atomic
 def register_period(
     user: User,
     start_date: date,
@@ -354,7 +358,14 @@ def register_period(
         como duración esperada del siguiente ciclo.
     """
 
-    active_cycle = get_active_cycle(user)
+    active_cycle = (
+        Cycle.objects.select_for_update()
+        .filter(
+            user=user,
+            status=CycleStatus.ACTIVE,
+        )
+        .first()
+    )
 
     if active_cycle:
 
@@ -424,7 +435,7 @@ def _create_cycle(
         timedelta(days=expected_length - 1)
     )
 
-    return Cycle.objects.create(
+    cycle = Cycle.objects.create(
         user=user,
         start_date=start_date,
         end_date=estimated_end_date,
@@ -432,6 +443,47 @@ def _create_cycle(
         actual_length=None,
         status=CycleStatus.ACTIVE,
     )
+
+    _generate_cycle_phases(cycle)
+
+    return cycle
+
+
+@transaction.atomic
+def _generate_cycle_phases(cycle: Cycle) -> None:
+    """Genera y crea los CyclePhase para un ciclo según las Phase maestras."""
+    total_days = (cycle.end_date - cycle.start_date).days + 1
+    phases = Phase.objects.all().order_by("sort_order")
+    num_phases = len(phases)
+
+    if num_phases == 0:
+        return
+
+    phase_start = cycle.start_date
+    phase_list = list(phases)
+
+    for i, phase in enumerate(phase_list):
+        if i < num_phases - 1:
+            phase_days = max(
+                round(total_days * float(phase.estimated_percentage) / 100),
+                1,
+            )
+        else:
+            phase_days = max(
+                total_days - (phase_start - cycle.start_date).days,
+                1,
+            )
+
+        phase_end = phase_start + timedelta(days=phase_days - 1)
+
+        CyclePhase.objects.create(
+            cycle=cycle,
+            phase=phase,
+            start_date=phase_start,
+            end_date=phase_end,
+        )
+
+        phase_start = phase_end + timedelta(days=1)
 
 
 def _close_previous_cycle(
@@ -475,4 +527,6 @@ def _close_previous_cycle(
             "status",
         ]
     )
+
+    generate_insight(cycle)
 

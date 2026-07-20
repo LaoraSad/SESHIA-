@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de registros | Seshia{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-seshia-700">Historial de registros</h1>
+        <p class="text-gray-500">Tus registros diarios de este ciclo.</p>
+    </div>
+
+    <a href="{% url 'cycles:daily-log' %}"
+       class="px-4 py-2 rounded-xl bg-white border border-seshia-200 text-seshia-600 font-medium hover:bg-seshia-100 transition text-sm">
+        Nuevo registro
+    </a>
+</div>
+
+{% if daily_logs %}
+    <div class="space-y-4">
+        {% for log in daily_logs %}
+        <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-3">
+                <p class="font-semibold text-seshia-700">{{ log.log_date|date:"l d \d\e F \d\e\l Y" }}</p>
+                <span class="text-xs text-gray-400">Día {{ log.day_number }}</span>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-3">
+                {% if log.energy_level %}
+                <span class="px-3 py-1 rounded-full bg-seshia-100 text-seshia-600 text-sm">
+                    Energía: {{ log.get_energy_level_display }}
+                </span>
+                {% endif %}
+
+                {% if log.mood %}
+                <span class="px-3 py-1 rounded-full bg-seshia-100 text-seshia-600 text-sm">
+                    {{ log.get_mood_display }}
+                </span>
+                {% endif %}
+            </div>
+
+            {% if log.symptoms.all %}
+            <div class="flex flex-wrap gap-1.5 mb-3">
+                {% for symptom in log.symptoms.all %}
+                <span class="px-2 py-0.5 rounded-md bg-seshia-50 text-seshia-500 text-xs">
+                    {{ symptom.category.icon }} {{ symptom.name }}
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if log.notes %}
+            <p class="text-sm text-gray-600 leading-relaxed">{{ log.notes }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-10 text-center">
+    <p class="text-lg font-semibold text-seshia-700 mb-1">Aún no tienes registros</p>
+    <p class="text-gray-500 text-sm mb-5">Comienza a registrar cómo te sientes cada día.</p>
+    <a href="{% url 'cycles:daily-log' %}"
+       class="inline-block bg-seshia-600 hover:bg-seshia-700 text-white font-semibold px-6 py-2.5 rounded-xl transition">
+        Hacer registro diario
+    </a>
+</div>
+{% endif %}
+{% endblock %}

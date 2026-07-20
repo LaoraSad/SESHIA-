@@ -25,7 +25,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
     <!-- Tarjeta morada con el dia del ciclo -->
-    <div class="bg-seshia-600 text-white rounded-2xl p-8 flex flex-col items-center justify-center text-center">
+    <div class="bg-seshia-600 text-white rounded-2xl p-5 sm:p-8 flex flex-col items-center justify-center text-center">
         <p class="text-seshia-200 text-sm mb-2">Día del ciclo</p>
         <p class="text-5xl font-extrabold mb-1">{{ active_cycle.day_number }}</p>
         <p class="text-seshia-200 text-sm mb-4">de {{ active_cycle.expected_length }} días</p>
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Fase actual -->
-    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8 lg:col-span-2">
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 sm:p-8 lg:col-span-2">
         {% if current_phase %}
         <p class="text-sm text-gray-500 mb-1">Fase actual</p>
         <h2 class="text-2xl font-bold text-seshia-700 mb-3">{{ current_phase.name }}</h2>
@@ -66,7 +66,7 @@
 </div>
 {% else %}
 <!-- Sin ciclo activo -->
-<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8 text-center mb-8">
+<div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 sm:p-8 text-center mb-8">
     <p class="text-lg font-semibold text-seshia-700 mb-1">Aún no tienes un ciclo activo</p>
     <p class="text-gray-500 text-sm">Registra el inicio de tu período para comenzar a hacer seguimiento.</p>
 </div>
@@ -74,9 +74,9 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    <!-- ================= Registrar nuevo periodo ================= -->
-    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8">
-        <h2 class="text-xl font-bold text-seshia-700 mb-4">Registrar nuevo período</h2>
+    <!-- ================= Registrar periodo ================= -->
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 sm:p-8">
+        <h2 class="text-xl font-bold text-seshia-700 mb-4">Registrar período</h2>
 
         <form method="post" action="{% url 'cycles:register-period' %}" novalidate>
             {% csrf_token %}
@@ -92,7 +92,7 @@
                     Fecha de inicio
                 </label>
                 {{ form.start_date }}
-                <p class="text-xs text-gray-400 mt-1">Formato: AAAA-MM-DD</p>
+                <p class="text-xs text-gray-400 mt-1">Formato: DD/MM/AAAA</p>
                 {{ form.start_date.errors }}
             </div>
 
@@ -119,58 +119,14 @@
         </form>
     </div>
 
-    <!-- ================= Registro diario de hoy ================= -->
-    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-8">
-        <h2 class="text-xl font-bold text-seshia-700 mb-4">¿Cómo te sientes hoy?</h2>
-
-        <form method="post" action="{% url 'cycles:daily-log' %}" novalidate>
-            {% csrf_token %}
-
-            {% if log_form.non_field_errors %}
-            <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm">
-                {{ log_form.non_field_errors }}
-            </div>
-            {% endif %}
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label for="{{ log_form.energy_level.id_for_label }}" class="block text-sm font-medium mb-1">
-                        Nivel de energía
-                    </label>
-                    {{ log_form.energy_level }}
-                    {{ log_form.energy_level.errors }}
-                </div>
-                <div>
-                    <label for="{{ log_form.mood.id_for_label }}" class="block text-sm font-medium mb-1">
-                        Estado de ánimo
-                    </label>
-                    {{ log_form.mood }}
-                    {{ log_form.mood.errors }}
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label for="{{ log_form.symptoms.id_for_label }}" class="block text-sm font-medium mb-1">
-                    Síntomas
-                </label>
-                {{ log_form.symptoms }}
-                <p class="text-xs text-gray-400 mt-1">Usa Ctrl (o Cmd) para seleccionar varios.</p>
-                {{ log_form.symptoms.errors }}
-            </div>
-
-            <div class="mb-6">
-                <label for="{{ log_form.notes.id_for_label }}" class="block text-sm font-medium mb-1">
-                    Notas
-                </label>
-                {{ log_form.notes }}
-                {{ log_form.notes.errors }}
-            </div>
-
-            <button type="submit"
-                    class="w-full bg-seshia-500 hover:bg-seshia-600 text-white font-semibold py-2.5 rounded-xl transition">
-                Guardar registro de hoy
-            </button>
-        </form>
+    <!-- Enlace al registro diario -->
+    <div class="bg-white rounded-2xl shadow-sm border border-seshia-100 p-5 sm:p-8 flex flex-col items-center justify-center text-center">
+        <p class="text-lg font-semibold text-seshia-700 mb-2">¿Cómo te sientes hoy?</p>
+        <p class="text-sm text-gray-500 mb-5">Registra tu energía, ánimo y síntomas</p>
+        <a href="{% url 'cycles:daily-log' %}"
+           class="bg-seshia-600 hover:bg-seshia-700 text-white font-semibold py-2.5 px-6 rounded-xl transition">
+            Abrir registro diario
+        </a>
     </div>
 </div>
 {% endblock %}

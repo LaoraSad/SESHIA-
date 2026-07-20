@@ -1,4 +1,5 @@
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.views import View
@@ -201,6 +202,7 @@ class CreateCategoryView(LoginRequiredMixin, View):
                 "title": "Nueva categoría",
             })
 
+        messages.success(request, "Categoría creada correctamente.")
         return redirect("finances:category-list")
 
 
@@ -245,6 +247,7 @@ class UpdateCategoryView(LoginRequiredMixin, View):
                 "title": "Editar categoría",
             })
 
+        messages.success(request, "Categoría actualizada correctamente.")
         return redirect("finances:category-list")
 
 

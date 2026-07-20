@@ -9,6 +9,7 @@ Responsibilities:
 """
 from django.db.models import QuerySet
 
+from apps.cycles.models.phase import Phase
 from apps.insights.choices import InsightType
 from apps.insights.models import Insight
 from apps.insights.services.conditions import CONDITIONS
@@ -94,6 +95,32 @@ def _select_best_rule(rules):
     )
 
 
+def _resolve_insight_phase(cycle, rule):
+    """Determina la fase del ciclo que debe asociarse al insight.
+
+    Usa la fase indicada por la regla si existe y está presente
+    en el ciclo; de lo contrario usa la fase actual del ciclo;
+    si todo falla, usa la primera fase del ciclo.
+    """
+    if rule.phase is not None:
+        phase_name = rule.phase.label
+        cycle_phase = cycle.phases.filter(
+            phase__name__iexact=phase_name,
+        ).first()
+        if cycle_phase is not None:
+            return cycle_phase.phase
+
+    current = cycle.current_phase
+    if current is not None:
+        return current
+
+    first = cycle.phases.first()
+    if first is not None:
+        return first.phase
+
+    return None
+
+
 def _create_insight(cycle, rule):
     """
     Crea y almacena un insight.
@@ -109,8 +136,9 @@ def _create_insight(cycle, rule):
             Regla seleccionada.
 
     Returns:
-        Insight:
-            Insight existente o recién creado.
+        Insight | None:
+            Insight existente o recién creado,
+            None si no se pudo determinar la fase.
     """
 
     existing_insight = Insight.objects.filter(
@@ -121,10 +149,15 @@ def _create_insight(cycle, rule):
     if existing_insight is not None:
         return existing_insight
 
+    phase = _resolve_insight_phase(cycle, rule)
+
+    if phase is None:
+        return None
+
     return Insight.objects.create(
         user=cycle.user,
         cycle=cycle,
-        phase=cycle.current_phase,
+        phase=phase,
         type=rule.type,
         code=rule.code,
         title=rule.title,

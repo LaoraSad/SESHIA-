@@ -16,9 +16,17 @@ class ExpenseForm(forms.ModelForm):
             "transaction_date",
             "description",
         ]
+        widgets = {
+            "transaction_date": forms.DateInput(
+                attrs={"type": "date"},
+            ),
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if user is None:
+            raise TypeError("ExpenseForm requiere el argumento 'user'.")
 
         if user:
             self.fields["category"].queryset = (
@@ -26,6 +34,10 @@ class ExpenseForm(forms.ModelForm):
                     category_type=CategoryType.EXPENSE,
                 )
             )
+
+        self.fields["category"].label_from_instance = (
+            lambda obj: f"{obj.icon} {obj.name}"
+        )
 
     def clean_transaction_date(self):
         transaction_date = self.cleaned_data["transaction_date"]

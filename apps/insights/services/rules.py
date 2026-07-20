@@ -15,7 +15,7 @@ Notes:
 
 from dataclasses import dataclass
 
-from apps.insights.choices import InsightType
+from apps.insights.choices import InsightType, PhaseType
 
 
 @dataclass(frozen=True)
@@ -196,7 +196,7 @@ DAILY_LOG_RULES = [
             "continúa, podrías organizar las actividades más "
             "exigentes para otros momentos del ciclo."
         ),
-        condition="repeated_low_energy",
+        condition="previous_cycle_low_energy",
         priority=2,
     ),
     InsightRule(
@@ -210,7 +210,7 @@ DAILY_LOG_RULES = [
             "momento para realizar actividades que requieran "
             "mayor esfuerzo físico o mental."
         ),
-        condition="repeated_high_energy",
+        condition="previous_cycle_high_energy",
         priority=4,
     ),
     InsightRule(
@@ -223,7 +223,7 @@ DAILY_LOG_RULES = [
             "similar durante esta fase. Conocer estos patrones "
             "puede ayudarte a anticipar cómo podrías sentirte."
         ),
-        condition="repeated_mood_pattern",
+        condition="previous_cycle_mood_pattern",
         priority=3,
     ),
     InsightRule(
@@ -236,7 +236,7 @@ DAILY_LOG_RULES = [
             "en varios ciclos. Llevar este seguimiento ayuda "
             "a reconocer mejor tus patrones personales."
         ),
-        condition="repeated_symptom",
+        condition="previous_cycle_symptoms",
         priority=2,
     ),
     InsightRule(
@@ -249,7 +249,7 @@ DAILY_LOG_RULES = [
             "durante un mismo periodo. Continuar registrándolos "
             "permitirá identificar patrones con mayor precisión."
         ),
-        condition="multiple_repeated_symptoms",
+        condition="multiple_previous_cycle_symptoms",
         priority=2,
     ),
     InsightRule(
@@ -389,7 +389,7 @@ MIXED_RULES = [
             "esta fase. Anticipar este patrón puede ayudarte a "
             "planificar mejor tu presupuesto."
         ),
-        condition="low_energy_with_higher_expenses",
+        condition="previous_cycle_low_energy_with_higher_expenses",
         priority=2,
     ),
     InsightRule(
