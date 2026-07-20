@@ -163,14 +163,14 @@
     <div class="flex flex-col items-center justify-center py-20 text-center">
         <img src="{% static 'img/logo.svg.png' %}" alt="Seshia" class="h-24 w-24 mb-6">
 
-        <h1 class="text-5xl font-bold text-seshia-900 mb-4">Bienvenida a Seshia</h1>
+        <h1 class="text-4xl sm:text-5xl font-bold text-seshia-900 mb-4">Bienvenida a Seshia</h1>
 
         <p class="text-lg text-gray-600 max-w-2xl mb-10">
             Conoce tu ciclo, registra cómo te sientes y toma el control de tus
             finanzas con recomendaciones pensadas para ti.
         </p>
 
-        <div class="flex gap-4">
+        <div class="flex flex-wrap justify-center gap-4">
             <a href="{% url 'users:register' %}" class="bg-seshia-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-seshia-700 transition">
                 Crear cuenta
             </a>
