@@ -18,8 +18,9 @@ Notes:
 from datetime import date, timedelta
 from typing import Any
 from django.db import transaction
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 
+from apps.base.services.date_service import get_current_date
 from apps.cycles.choices import CycleStatus, EnergyLevel, Mood
 from apps.cycles.models import Cycle, CyclePhase
 from apps.cycles.models.daily_log import DailyLog
@@ -141,8 +142,12 @@ def get_cycle_by_date(
         Cycle.objects.filter(
             user=user,
             start_date__lte=target_date,
-            end_date__gte=target_date,
-        ).first()
+        )
+        .filter(
+            Q(end_date__gte=target_date, status=CycleStatus.COMPLETED)
+            | Q(status=CycleStatus.ACTIVE),
+        )
+        .first()
     )
 
 
@@ -150,31 +155,21 @@ def get_cycle_phase_by_date(
     cycle: Cycle,
     target_date: date,
 ) -> CyclePhase | None:
-    """
-    Obtiene la fase del ciclo menstrual correspondiente a una fecha determinada.
-
-    Args:
-        cycle (Cycle):
-            Ciclo menstrual donde se realizará la búsqueda.
-
-        target_date (date):
-            Fecha que se desea consultar.
-
-    Returns:
-        CyclePhase | None:
-            Fase del ciclo correspondiente a la fecha indicada o None si
-            no existe.
-
-    Notes:
-        La búsqueda se realiza utilizando el rango comprendido entre la
-        fecha de inicio y la fecha de finalización de cada fase del ciclo.
-    """
-    return (
+    phase = (
         CyclePhase.objects.filter(
             cycle=cycle,
             start_date__lte=target_date,
             end_date__gte=target_date,
         )
+        .first()
+    )
+
+    if phase is not None:
+        return phase
+
+    return (
+        CyclePhase.objects.filter(cycle=cycle)
+        .order_by("-end_date")
         .first()
     )
 
@@ -199,7 +194,7 @@ def get_dashboard_data(user: User) -> dict[str, Any]:
         relacionados con el ciclo serán ``None``.
     """
 
-    today = date.today()
+    today = get_current_date()
 
     active_cycle = get_active_cycle(user)
 
@@ -221,14 +216,16 @@ def get_dashboard_data(user: User) -> dict[str, Any]:
             end_date__gte=today,
         ).first()
 
-        if phase_record:
-            phase_day = (
-                today - phase_record.start_date
-            ).days + 1
+        if phase_record is None:
+            phase_record = active_cycle.phases.order_by("-end_date").first()
 
-            days_remaining = (
-                phase_record.end_date - today
-            ).days
+        if phase_record:
+            phase_day = max(
+                (today - phase_record.start_date).days + 1, 1
+            )
+            days_remaining = max(
+                (phase_record.end_date - today).days, 0
+            )
 
     return {
         "active_cycle": active_cycle,
@@ -280,7 +277,7 @@ def create_or_update_daily_log(
         se creará un nuevo registro.
     """
 
-    today = date.today()
+    today = get_current_date()
 
     active_cycle = get_active_cycle(user)
 
@@ -406,39 +403,10 @@ def _create_cycle(
     start_date: date,
     expected_length: int,
 ) -> Cycle:
-    """
-    Crea un nuevo ciclo menstrual.
-
-    Args:
-        user (User):
-            Usuaria propietaria del ciclo.
-
-        start_date (date):
-            Fecha de inicio del ciclo.
-
-        expected_length (int):
-            Duración esperada del ciclo en días.
-
-    Returns:
-        Cycle:
-            Ciclo menstrual creado.
-
-    Notes:
-        La fecha de finalización se calcula utilizando la duración
-        esperada del ciclo. Cuando la usuaria registre un nuevo
-        período, esta fecha será reemplazada por la fecha real de
-        finalización.
-    """
-
-    estimated_end_date = (
-        start_date +
-        timedelta(days=expected_length - 1)
-    )
-
     cycle = Cycle.objects.create(
         user=user,
         start_date=start_date,
-        end_date=estimated_end_date,
+        end_date=None,
         expected_length=expected_length,
         actual_length=None,
         status=CycleStatus.ACTIVE,
@@ -452,7 +420,7 @@ def _create_cycle(
 @transaction.atomic
 def _generate_cycle_phases(cycle: Cycle) -> None:
     """Genera y crea los CyclePhase para un ciclo según las Phase maestras."""
-    total_days = (cycle.end_date - cycle.start_date).days + 1
+    total_days = cycle.expected_length
     phases = Phase.objects.all().order_by("sort_order")
     num_phases = len(phases)
 

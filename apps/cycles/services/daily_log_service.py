@@ -17,6 +17,7 @@ from datetime import date
 
 from django.db.models import QuerySet
 
+from apps.cycles.choices import CycleStatus
 from apps.cycles.models import Cycle, DailyLog, Symptom
 
 
@@ -64,14 +65,14 @@ def create_daily_log(
         registro debido a la relación ManyToMany.
     """
 
-    if cycle.end_date is not None and not (
+    if cycle.status == CycleStatus.COMPLETED and not (
         cycle.start_date <= log_date <= cycle.end_date
     ):
         raise ValueError(
             "La fecha del registro debe pertenecer al ciclo."
         )
 
-    if cycle.end_date is None and log_date < cycle.start_date:
+    if cycle.status == CycleStatus.ACTIVE and log_date < cycle.start_date:
         raise ValueError(
             "La fecha del registro debe pertenecer al ciclo."
         )

@@ -23,7 +23,7 @@
             <div>
                 <h2 class="text-lg font-bold text-seshia-700">
                     Ciclo del {{ cycle.start_date|date:"d/m/Y" }}
-                    {% if cycle.end_date %} al {{ cycle.end_date|date:"d/m/Y" }}{% endif %}
+                    {% if cycle.status == "COMPLETED" and cycle.end_date %} al {{ cycle.end_date|date:"d/m/Y" }}{% endif %}
                 </h2>
                 <p class="text-sm text-gray-500">
                     {% if cycle.actual_length %}

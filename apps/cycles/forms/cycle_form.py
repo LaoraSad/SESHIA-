@@ -2,6 +2,7 @@ from datetime import date
 
 from django import forms
 
+from apps.base.services.date_service import get_current_date
 from apps.cycles.models import Cycle
 
 
@@ -21,8 +22,9 @@ class CycleForm(forms.ModelForm):
 
     def clean_start_date(self):
         start_date = self.cleaned_data["start_date"]
+        simulated = get_current_date()
 
-        if start_date > date.today():
+        if simulated == date.today() and start_date > simulated:
             raise forms.ValidationError(
                 "La fecha de inicio no puede ser futura."
             )
