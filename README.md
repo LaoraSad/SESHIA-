@@ -1,4 +1,4 @@
-# SESHIA-
+# SESHIA
 
 Seshia es una aplicación web desarrollada con Django que permite a las usuarias realizar el seguimiento de su ciclo menstrual y administrar sus finanzas personales desde una única plataforma. El sistema integra información relacionada con los ciclos menstruales, síntomas diarios, ingresos y gastos para generar información útil que permita identificar posibles relaciones entre el comportamiento financiero y las diferentes fases del ciclo menstrual.
 
